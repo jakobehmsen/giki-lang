@@ -152,7 +152,8 @@ public class Main {
 		
 		JFrame frame = new MainFrame(resourceStoreProvider);
 		
-		frame.setSize(1024, 768);
+//		frame.setSize(1024, 768);
+		frame.setSize(640, 400);
 		frame.setLocationRelativeTo(null);
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		frame.setVisible(true);

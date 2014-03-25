@@ -62,7 +62,7 @@ import javax.swing.event.ChangeListener;
 
 public class MainFrame extends JFrame {
 	public static String NAME = "Giki"; 
-	public static String VERSION = "0.0.3";
+	public static String VERSION = "0.0.1";
 //	public static final String FONT_FAMILY = Font.MONOSPACED;
 
 	public static final String FONT_FAMILY = "Consolas";
