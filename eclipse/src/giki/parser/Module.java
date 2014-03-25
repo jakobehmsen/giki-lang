@@ -19,7 +19,8 @@ public class Module {
 	public final String ressourcePath;
 	public final String path;
 	public final String name;
-	public final Symbol bodyAst;
+//	public final Symbol bodyAst;
+	public final Func0<Symbol> bodyInterpolater;
 	public final Parser.ParseContext parseContext;
 //	public final CodeBuilder codeBuilder;
 //	private CodeBuilder.Build build;
@@ -31,11 +32,11 @@ public class Module {
 	private Symbol reified;
 	
 //	public Module(String ressourcePath, String path, String name, Symbol bodyAst, CodeBuilder codeBuilder, String[] modifiers, Module[] innerModules, ArrayList<HLIdentifier> dependencies) {
-	public Module(String ressourcePath, String path, String name, Symbol bodyAst, Parser.ParseContext parseContext, Modifier[] modifiers, Module[] innerModules) {
+	public Module(String ressourcePath, String path, String name, Func0<Symbol> bodyInterpolater, Parser.ParseContext parseContext, Modifier[] modifiers, Module[] innerModules) {
 		this.ressourcePath = ressourcePath;
 		this.path = path;
 		this.name = name;
-		this.bodyAst = bodyAst;
+		this.bodyInterpolater = bodyInterpolater;
 		this.parseContext = parseContext;
 //		this.codeBuilder = codeBuilder;
 		this.modifiers = modifiers;
@@ -59,7 +60,7 @@ public class Module {
 			.with(Symbol.Map.KEY_TYPE, Symbol.Map.AST_TYPE_MODULE)
 			.with(Symbol.Map.KEY_MODIFIERS, new Container.Default(reifiedModifiersBuilder))
 			.with(Symbol.Map.KEY_INNER_MODULES, new Container.Default(reifiedInnerModulesBuilder))
-			.with(Symbol.Map.KEY_BODY, bodyAst);
+			.with(Symbol.Map.KEY_BODY, bodyInterpolater.call());
 		
 		return reified;
 	}

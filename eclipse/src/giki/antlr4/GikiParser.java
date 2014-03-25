@@ -1,4 +1,4 @@
-// Generated from C:\Users\Jakob\Dropbox\Eclipse\workspace\Giki 0.0.4\src\giki\antlr4\Giki.g4 by ANTLR 4.1
+// Generated from C:\github\giki-lang\eclipse\src\giki\antlr4\Giki.g4 by ANTLR 4.1
 package giki.antlr4;
 import org.antlr.v4.runtime.atn.*;
 import org.antlr.v4.runtime.dfa.DFA;
@@ -15,25 +15,26 @@ public class GikiParser extends Parser {
 	protected static final PredictionContextCache _sharedContextCache =
 		new PredictionContextCache();
 	public static final int
-		COMMA=1, AT=2, HASH=3, DOUBLE_PLUS=4, CONSUMPTION_STRING=5, PRODUCTION_STRING=6, 
-		CONSUMPTION_INT=7, PRODUCTION_INT=8, IO_SCOPE=9, SINGLE_QUOTE=10, EXCLAMATION=11, 
-		CARET=12, PATH_SEPARATOR=13, DOUBLE_DOT=14, SEMICOLON=15, NAMED_PRIMITIVE_RETURN=16, 
-		NAMED_PRIMITIVE_VARIABLES=17, NAMED_PRIMITIVE_EOF=18, NAMED_PRIMITIVE_NIL=19, 
-		KEYWORD_DEFINE=20, KEYWORD_USE=21, KEYWORD_FROM=22, KEYWORD_TO=23, KEYWORD_VAR=24, 
-		KEYWORD_REST=25, KEYWORD_GOTO=26, KEYWORD_FILE=27, PIPELINE=28, PIPELINE_FROM=29, 
-		PIPELINE_TO=30, PIPE=31, UNDERSCORE=32, ASTERIX=33, PRECEDENCE_OPERATOR=34, 
-		COLON=35, DOT=36, EQUALS=37, OPEN_SQ_BRACKET=38, CLOSE_SQ_BRACKET=39, 
-		OPEN_PARENTHESIS=40, CLOSE_PARENTHESIS=41, OPEN_BRACKET=42, CLOSE_BRACKET=43, 
-		KW_IF=44, ID=45, WS=46, SINGLELINE_COMMENT=47, MULTI_LINE_COMMENT=48, 
-		VERBATIM=49;
+		DOLLAR=1, COMMA=2, AT=3, HASH=4, DOUBLE_PLUS=5, CONSUMPTION_STRING=6, 
+		PRODUCTION_STRING=7, CONSUMPTION_INT=8, PRODUCTION_INT=9, IO_SCOPE=10, 
+		SINGLE_QUOTE=11, EXCLAMATION=12, CARET=13, PATH_SEPARATOR=14, DOUBLE_DOT=15, 
+		SEMICOLON=16, NAMED_PRIMITIVE_RETURN=17, NAMED_PRIMITIVE_VARIABLES=18, 
+		NAMED_PRIMITIVE_EOF=19, NAMED_PRIMITIVE_NIL=20, KEYWORD_DEFINE=21, KEYWORD_USE=22, 
+		KEYWORD_FROM=23, KEYWORD_TO=24, KEYWORD_VAR=25, KEYWORD_REST=26, KEYWORD_GOTO=27, 
+		KEYWORD_FILE=28, PIPELINE=29, PIPELINE_FROM=30, PIPELINE_TO=31, PIPE=32, 
+		UNDERSCORE=33, ASTERIX=34, PRECEDENCE_OPERATOR=35, COLON=36, DOT=37, EQUALS=38, 
+		OPEN_SQ_BRACKET=39, CLOSE_SQ_BRACKET=40, OPEN_PARENTHESIS=41, CLOSE_PARENTHESIS=42, 
+		OPEN_BRACKET=43, CLOSE_BRACKET=44, KW_IF=45, ID=46, WS=47, SINGLELINE_COMMENT=48, 
+		MULTI_LINE_COMMENT=49, VERBATIM=50;
 	public static final String[] tokenNames = {
-		"<INVALID>", "','", "'@'", "'#'", "'++'", "CONSUMPTION_STRING", "PRODUCTION_STRING", 
-		"CONSUMPTION_INT", "PRODUCTION_INT", "IO_SCOPE", "'''", "'!'", "'^'", 
-		"'::'", "'..'", "';'", "'ret'", "'vars'", "'eof'", "'nil'", "'def'", "'use'", 
-		"'from'", "'to'", "'var'", "'rest'", "'goto'", "'file'", "PIPELINE", "PIPELINE_FROM", 
-		"PIPELINE_TO", "'|'", "'_'", "'*'", "PRECEDENCE_OPERATOR", "':'", "'.'", 
-		"'='", "'['", "']'", "'('", "')'", "'{'", "'}'", "'if'", "ID", "WS", "SINGLELINE_COMMENT", 
-		"MULTI_LINE_COMMENT", "VERBATIM"
+		"<INVALID>", "'$'", "','", "'@'", "'#'", "'++'", "CONSUMPTION_STRING", 
+		"PRODUCTION_STRING", "CONSUMPTION_INT", "PRODUCTION_INT", "IO_SCOPE", 
+		"'''", "'!'", "'^'", "'::'", "'..'", "';'", "'ret'", "'vars'", "'eof'", 
+		"'nil'", "'def'", "'use'", "'from'", "'to'", "'var'", "'rest'", "'goto'", 
+		"'file'", "PIPELINE", "PIPELINE_FROM", "PIPELINE_TO", "'|'", "'_'", "'*'", 
+		"PRECEDENCE_OPERATOR", "':'", "'.'", "'='", "'['", "']'", "'('", "')'", 
+		"'{'", "'}'", "'if'", "ID", "WS", "SINGLELINE_COMMENT", "MULTI_LINE_COMMENT", 
+		"VERBATIM"
 	};
 	public static final int
 		RULE_program = 0, RULE_programElements = 1, RULE_module = 2, RULE_moduleModifiers = 3, 
@@ -46,7 +47,8 @@ public class GikiParser extends Parser {
 		RULE_list = 25, RULE_map = 26, RULE_ioOperation = 27, RULE_identifier = 28, 
 		RULE_matchID = 29, RULE_consumeString = 30, RULE_produceString = 31, RULE_consumeInteger = 32, 
 		RULE_produceInteger = 33, RULE_namedPrimitive = 34, RULE_move = 35, RULE_peek = 36, 
-		RULE_next = 37, RULE_label = 38, RULE_produceVerbatim = 39, RULE_quote = 40;
+		RULE_next = 37, RULE_label = 38, RULE_produceVerbatim = 39, RULE_quote = 40, 
+		RULE_interpolation = 41;
 	public static final String[] ruleNames = {
 		"program", "programElements", "module", "moduleModifiers", "expressions", 
 		"expression", "variableDeclaration", "assignment", "decision", "decisionTail", 
@@ -55,7 +57,7 @@ public class GikiParser extends Parser {
 		"interval", "slotSet", "group", "list", "map", "ioOperation", "identifier", 
 		"matchID", "consumeString", "produceString", "consumeInteger", "produceInteger", 
 		"namedPrimitive", "move", "peek", "next", "label", "produceVerbatim", 
-		"quote"
+		"quote", "interpolation"
 	};
 
 	@Override
@@ -103,7 +105,7 @@ public class GikiParser extends Parser {
 		try {
 			enterOuterAlt(_localctx, 1);
 			{
-			setState(82); programElements();
+			setState(84); programElements();
 			}
 		}
 		catch (RecognitionException re) {
@@ -118,6 +120,9 @@ public class GikiParser extends Parser {
 	}
 
 	public static class ProgramElementsContext extends ParserRuleContext {
+		public List<ExpressionsContext> expressions() {
+			return getRuleContexts(ExpressionsContext.class);
+		}
 		public ModuleContext module(int i) {
 			return getRuleContext(ModuleContext.class,i);
 		}
@@ -126,9 +131,6 @@ public class GikiParser extends Parser {
 		}
 		public ExpressionsContext expressions(int i) {
 			return getRuleContext(ExpressionsContext.class,i);
-		}
-		public List<ExpressionsContext> expressions() {
-			return getRuleContexts(ExpressionsContext.class);
 		}
 		public ProgramElementsContext(ParserRuleContext parent, int invokingState) {
 			super(parent, invokingState);
@@ -156,18 +158,19 @@ public class GikiParser extends Parser {
 		try {
 			enterOuterAlt(_localctx, 1);
 			{
-			setState(88);
+			setState(90);
 			_errHandler.sync(this);
 			_la = _input.LA(1);
-			while ((((_la) & ~0x3f) == 0 && ((1L << _la) & ((1L << AT) | (1L << CONSUMPTION_STRING) | (1L << PRODUCTION_STRING) | (1L << CONSUMPTION_INT) | (1L << PRODUCTION_INT) | (1L << SINGLE_QUOTE) | (1L << EXCLAMATION) | (1L << CARET) | (1L << NAMED_PRIMITIVE_RETURN) | (1L << NAMED_PRIMITIVE_VARIABLES) | (1L << NAMED_PRIMITIVE_EOF) | (1L << NAMED_PRIMITIVE_NIL) | (1L << KEYWORD_DEFINE) | (1L << KEYWORD_VAR) | (1L << KEYWORD_REST) | (1L << KEYWORD_FILE) | (1L << UNDERSCORE) | (1L << OPEN_SQ_BRACKET) | (1L << OPEN_PARENTHESIS) | (1L << OPEN_BRACKET) | (1L << ID) | (1L << VERBATIM))) != 0)) {
+			while ((((_la) & ~0x3f) == 0 && ((1L << _la) & ((1L << DOLLAR) | (1L << AT) | (1L << CONSUMPTION_STRING) | (1L << PRODUCTION_STRING) | (1L << CONSUMPTION_INT) | (1L << PRODUCTION_INT) | (1L << SINGLE_QUOTE) | (1L << EXCLAMATION) | (1L << CARET) | (1L << NAMED_PRIMITIVE_RETURN) | (1L << NAMED_PRIMITIVE_VARIABLES) | (1L << NAMED_PRIMITIVE_EOF) | (1L << NAMED_PRIMITIVE_NIL) | (1L << KEYWORD_DEFINE) | (1L << KEYWORD_VAR) | (1L << KEYWORD_REST) | (1L << KEYWORD_FILE) | (1L << UNDERSCORE) | (1L << OPEN_SQ_BRACKET) | (1L << OPEN_PARENTHESIS) | (1L << OPEN_BRACKET) | (1L << ID) | (1L << VERBATIM))) != 0)) {
 				{
-				setState(86);
+				setState(88);
 				switch (_input.LA(1)) {
 				case KEYWORD_DEFINE:
 					{
-					setState(84); module();
+					setState(86); module();
 					}
 					break;
+				case DOLLAR:
 				case AT:
 				case CONSUMPTION_STRING:
 				case PRODUCTION_STRING:
@@ -190,14 +193,14 @@ public class GikiParser extends Parser {
 				case ID:
 				case VERBATIM:
 					{
-					setState(85); expressions();
+					setState(87); expressions();
 					}
 					break;
 				default:
 					throw new NoViableAltException(this);
 				}
 				}
-				setState(90);
+				setState(92);
 				_errHandler.sync(this);
 				_la = _input.LA(1);
 			}
@@ -216,16 +219,16 @@ public class GikiParser extends Parser {
 
 	public static class ModuleContext extends ParserRuleContext {
 		public Token selector;
+		public TerminalNode ID() { return getToken(GikiParser.ID, 0); }
+		public TerminalNode CLOSE_PARENTHESIS() { return getToken(GikiParser.CLOSE_PARENTHESIS, 0); }
+		public TerminalNode KEYWORD_DEFINE() { return getToken(GikiParser.KEYWORD_DEFINE, 0); }
 		public ProgramElementsContext programElements() {
 			return getRuleContext(ProgramElementsContext.class,0);
 		}
-		public TerminalNode ID() { return getToken(GikiParser.ID, 0); }
-		public TerminalNode KEYWORD_DEFINE() { return getToken(GikiParser.KEYWORD_DEFINE, 0); }
+		public TerminalNode OPEN_PARENTHESIS() { return getToken(GikiParser.OPEN_PARENTHESIS, 0); }
 		public ModuleModifiersContext moduleModifiers() {
 			return getRuleContext(ModuleModifiersContext.class,0);
 		}
-		public TerminalNode CLOSE_PARENTHESIS() { return getToken(GikiParser.CLOSE_PARENTHESIS, 0); }
-		public TerminalNode OPEN_PARENTHESIS() { return getToken(GikiParser.OPEN_PARENTHESIS, 0); }
 		public ModuleContext(ParserRuleContext parent, int invokingState) {
 			super(parent, invokingState);
 		}
@@ -251,13 +254,13 @@ public class GikiParser extends Parser {
 		try {
 			enterOuterAlt(_localctx, 1);
 			{
-			setState(91); match(KEYWORD_DEFINE);
-			setState(92); moduleModifiers();
-			setState(93); ((ModuleContext)_localctx).selector = match(ID);
+			setState(93); match(KEYWORD_DEFINE);
+			setState(94); moduleModifiers();
+			setState(95); ((ModuleContext)_localctx).selector = match(ID);
 			{
-			setState(94); match(OPEN_PARENTHESIS);
-			setState(95); programElements();
-			setState(96); match(CLOSE_PARENTHESIS);
+			setState(96); match(OPEN_PARENTHESIS);
+			setState(97); programElements();
+			setState(98); match(CLOSE_PARENTHESIS);
 			}
 			}
 		}
@@ -303,18 +306,18 @@ public class GikiParser extends Parser {
 			int _alt;
 			enterOuterAlt(_localctx, 1);
 			{
-			setState(101);
+			setState(103);
 			_errHandler.sync(this);
 			_alt = getInterpreter().adaptivePredict(_input,2,_ctx);
 			while ( _alt!=2 && _alt!=-1 ) {
 				if ( _alt==1 ) {
 					{
 					{
-					setState(98); match(ID);
+					setState(100); match(ID);
 					}
 					} 
 				}
-				setState(103);
+				setState(105);
 				_errHandler.sync(this);
 				_alt = getInterpreter().adaptivePredict(_input,2,_ctx);
 			}
@@ -332,10 +335,10 @@ public class GikiParser extends Parser {
 	}
 
 	public static class ExpressionsContext extends ParserRuleContext {
+		public List<TerminalNode> SEMICOLON() { return getTokens(GikiParser.SEMICOLON); }
 		public ExpressionContext expression(int i) {
 			return getRuleContext(ExpressionContext.class,i);
 		}
-		public List<TerminalNode> SEMICOLON() { return getTokens(GikiParser.SEMICOLON); }
 		public TerminalNode SEMICOLON(int i) {
 			return getToken(GikiParser.SEMICOLON, i);
 		}
@@ -368,25 +371,25 @@ public class GikiParser extends Parser {
 		try {
 			enterOuterAlt(_localctx, 1);
 			{
-			setState(104); expression();
-			setState(111);
+			setState(106); expression();
+			setState(113);
 			_errHandler.sync(this);
 			_la = _input.LA(1);
 			while (_la==SEMICOLON) {
 				{
 				{
-				setState(105); match(SEMICOLON);
-				setState(107);
+				setState(107); match(SEMICOLON);
+				setState(109);
 				switch ( getInterpreter().adaptivePredict(_input,3,_ctx) ) {
 				case 1:
 					{
-					setState(106); expression();
+					setState(108); expression();
 					}
 					break;
 				}
 				}
 				}
-				setState(113);
+				setState(115);
 				_errHandler.sync(this);
 				_la = _input.LA(1);
 			}
@@ -432,7 +435,7 @@ public class GikiParser extends Parser {
 		try {
 			enterOuterAlt(_localctx, 1);
 			{
-			setState(114); variableDeclaration();
+			setState(116); variableDeclaration();
 			}
 		}
 		catch (RecognitionException re) {
@@ -450,14 +453,14 @@ public class GikiParser extends Parser {
 		public Token isDeclaration;
 		public Token hasInitialization;
 		public DecisionContext value;
-		public TerminalNode EQUALS() { return getToken(GikiParser.EQUALS, 0); }
-		public AssignmentContext assignment() {
-			return getRuleContext(AssignmentContext.class,0);
-		}
 		public DecisionContext decision() {
 			return getRuleContext(DecisionContext.class,0);
 		}
 		public TerminalNode ID() { return getToken(GikiParser.ID, 0); }
+		public TerminalNode EQUALS() { return getToken(GikiParser.EQUALS, 0); }
+		public AssignmentContext assignment() {
+			return getRuleContext(AssignmentContext.class,0);
+		}
 		public TerminalNode KEYWORD_VAR() { return getToken(GikiParser.KEYWORD_VAR, 0); }
 		public VariableDeclarationContext(ParserRuleContext parent, int invokingState) {
 			super(parent, invokingState);
@@ -483,24 +486,25 @@ public class GikiParser extends Parser {
 		enterRule(_localctx, 12, RULE_variableDeclaration);
 		int _la;
 		try {
-			setState(123);
+			setState(125);
 			switch (_input.LA(1)) {
 			case KEYWORD_VAR:
 				enterOuterAlt(_localctx, 1);
 				{
-				setState(116); match(KEYWORD_VAR);
-				setState(117); ((VariableDeclarationContext)_localctx).isDeclaration = match(ID);
-				setState(120);
+				setState(118); match(KEYWORD_VAR);
+				setState(119); ((VariableDeclarationContext)_localctx).isDeclaration = match(ID);
+				setState(122);
 				_la = _input.LA(1);
 				if (_la==EQUALS) {
 					{
-					setState(118); ((VariableDeclarationContext)_localctx).hasInitialization = match(EQUALS);
-					setState(119); ((VariableDeclarationContext)_localctx).value = decision();
+					setState(120); ((VariableDeclarationContext)_localctx).hasInitialization = match(EQUALS);
+					setState(121); ((VariableDeclarationContext)_localctx).value = decision();
 					}
 				}
 
 				}
 				break;
+			case DOLLAR:
 			case AT:
 			case CONSUMPTION_STRING:
 			case PRODUCTION_STRING:
@@ -523,7 +527,7 @@ public class GikiParser extends Parser {
 			case VERBATIM:
 				enterOuterAlt(_localctx, 2);
 				{
-				setState(122); assignment();
+				setState(124); assignment();
 				}
 				break;
 			default:
@@ -545,11 +549,11 @@ public class GikiParser extends Parser {
 		public Token id;
 		public Token isAssignment;
 		public DecisionContext value;
-		public TerminalNode EQUALS() { return getToken(GikiParser.EQUALS, 0); }
 		public DecisionContext decision() {
 			return getRuleContext(DecisionContext.class,0);
 		}
 		public TerminalNode ID() { return getToken(GikiParser.ID, 0); }
+		public TerminalNode EQUALS() { return getToken(GikiParser.EQUALS, 0); }
 		public AssignmentContext(ParserRuleContext parent, int invokingState) {
 			super(parent, invokingState);
 		}
@@ -573,21 +577,21 @@ public class GikiParser extends Parser {
 		AssignmentContext _localctx = new AssignmentContext(_ctx, getState());
 		enterRule(_localctx, 14, RULE_assignment);
 		try {
-			setState(129);
+			setState(131);
 			switch ( getInterpreter().adaptivePredict(_input,7,_ctx) ) {
 			case 1:
 				enterOuterAlt(_localctx, 1);
 				{
-				setState(125); ((AssignmentContext)_localctx).id = match(ID);
-				setState(126); ((AssignmentContext)_localctx).isAssignment = match(EQUALS);
-				setState(127); ((AssignmentContext)_localctx).value = decision();
+				setState(127); ((AssignmentContext)_localctx).id = match(ID);
+				setState(128); ((AssignmentContext)_localctx).isAssignment = match(EQUALS);
+				setState(129); ((AssignmentContext)_localctx).value = decision();
 				}
 				break;
 
 			case 2:
 				enterOuterAlt(_localctx, 2);
 				{
-				setState(128); decision();
+				setState(130); decision();
 				}
 				break;
 			}
@@ -605,11 +609,11 @@ public class GikiParser extends Parser {
 
 	public static class DecisionContext extends ParserRuleContext {
 		public PipelineContext value;
-		public PipelineContext pipeline() {
-			return getRuleContext(PipelineContext.class,0);
-		}
 		public DecisionTailContext decisionTail() {
 			return getRuleContext(DecisionTailContext.class,0);
+		}
+		public PipelineContext pipeline() {
+			return getRuleContext(PipelineContext.class,0);
 		}
 		public DecisionContext(ParserRuleContext parent, int invokingState) {
 			super(parent, invokingState);
@@ -636,8 +640,8 @@ public class GikiParser extends Parser {
 		try {
 			enterOuterAlt(_localctx, 1);
 			{
-			setState(131); ((DecisionContext)_localctx).value = pipeline();
-			setState(132); decisionTail();
+			setState(133); ((DecisionContext)_localctx).value = pipeline();
+			setState(134); decisionTail();
 			}
 		}
 		catch (RecognitionException re) {
@@ -653,14 +657,14 @@ public class GikiParser extends Parser {
 
 	public static class DecisionTailContext extends ParserRuleContext {
 		public List<TerminalNode> PIPE() { return getTokens(GikiParser.PIPE); }
-		public PipelineContext pipeline(int i) {
-			return getRuleContext(PipelineContext.class,i);
-		}
 		public TerminalNode PIPE(int i) {
 			return getToken(GikiParser.PIPE, i);
 		}
 		public List<PipelineContext> pipeline() {
 			return getRuleContexts(PipelineContext.class);
+		}
+		public PipelineContext pipeline(int i) {
+			return getRuleContext(PipelineContext.class,i);
 		}
 		public DecisionTailContext(ParserRuleContext parent, int invokingState) {
 			super(parent, invokingState);
@@ -688,17 +692,17 @@ public class GikiParser extends Parser {
 		try {
 			enterOuterAlt(_localctx, 1);
 			{
-			setState(138);
+			setState(140);
 			_errHandler.sync(this);
 			_la = _input.LA(1);
 			while (_la==PIPE) {
 				{
 				{
-				setState(134); match(PIPE);
-				setState(135); pipeline();
+				setState(136); match(PIPE);
+				setState(137); pipeline();
 				}
 				}
-				setState(140);
+				setState(142);
 				_errHandler.sync(this);
 				_la = _input.LA(1);
 			}
@@ -720,17 +724,17 @@ public class GikiParser extends Parser {
 		public PipelineFromContext hasFrom;
 		public PipelineInterContext hasInters;
 		public PipelineToContext hasTo;
-		public List<PipelineInterContext> pipelineInter() {
-			return getRuleContexts(PipelineInterContext.class);
-		}
-		public PipelineFromContext pipelineFrom() {
-			return getRuleContext(PipelineFromContext.class,0);
-		}
 		public PipelineInterContext pipelineInter(int i) {
 			return getRuleContext(PipelineInterContext.class,i);
 		}
 		public PipelineToContext pipelineTo() {
 			return getRuleContext(PipelineToContext.class,0);
+		}
+		public PipelineFromContext pipelineFrom() {
+			return getRuleContext(PipelineFromContext.class,0);
+		}
+		public List<PipelineInterContext> pipelineInter() {
+			return getRuleContexts(PipelineInterContext.class);
 		}
 		public PreFixOperationContext preFixOperation() {
 			return getRuleContext(PreFixOperationContext.class,0);
@@ -761,34 +765,34 @@ public class GikiParser extends Parser {
 		try {
 			enterOuterAlt(_localctx, 1);
 			{
-			setState(141); ((PipelineContext)_localctx).lhs = preFixOperation();
+			setState(143); ((PipelineContext)_localctx).lhs = preFixOperation();
 			{
-			setState(143);
+			setState(145);
 			_la = _input.LA(1);
 			if (_la==PIPELINE_FROM) {
 				{
-				setState(142); ((PipelineContext)_localctx).hasFrom = pipelineFrom();
+				setState(144); ((PipelineContext)_localctx).hasFrom = pipelineFrom();
 				}
 			}
 
-			setState(148);
+			setState(150);
 			_errHandler.sync(this);
 			_la = _input.LA(1);
 			while (_la==PIPELINE) {
 				{
 				{
-				setState(145); ((PipelineContext)_localctx).hasInters = pipelineInter();
+				setState(147); ((PipelineContext)_localctx).hasInters = pipelineInter();
 				}
 				}
-				setState(150);
+				setState(152);
 				_errHandler.sync(this);
 				_la = _input.LA(1);
 			}
-			setState(152);
+			setState(154);
 			_la = _input.LA(1);
 			if (_la==PIPELINE_TO) {
 				{
-				setState(151); ((PipelineContext)_localctx).hasTo = pipelineTo();
+				setState(153); ((PipelineContext)_localctx).hasTo = pipelineTo();
 				}
 			}
 
@@ -837,8 +841,8 @@ public class GikiParser extends Parser {
 		try {
 			enterOuterAlt(_localctx, 1);
 			{
-			setState(154); match(PIPELINE_FROM);
-			setState(155); ((PipelineFromContext)_localctx).body = preFixOperation();
+			setState(156); match(PIPELINE_FROM);
+			setState(157); ((PipelineFromContext)_localctx).body = preFixOperation();
 			}
 		}
 		catch (RecognitionException re) {
@@ -882,8 +886,8 @@ public class GikiParser extends Parser {
 		try {
 			enterOuterAlt(_localctx, 1);
 			{
-			setState(157); match(PIPELINE);
-			setState(158); preFixOperation();
+			setState(159); match(PIPELINE);
+			setState(160); preFixOperation();
 			}
 		}
 		catch (RecognitionException re) {
@@ -899,10 +903,10 @@ public class GikiParser extends Parser {
 
 	public static class PipelineToContext extends ParserRuleContext {
 		public PreFixOperationContext body;
+		public TerminalNode PIPELINE_TO() { return getToken(GikiParser.PIPELINE_TO, 0); }
 		public PreFixOperationContext preFixOperation() {
 			return getRuleContext(PreFixOperationContext.class,0);
 		}
-		public TerminalNode PIPELINE_TO() { return getToken(GikiParser.PIPELINE_TO, 0); }
 		public PipelineToContext(ParserRuleContext parent, int invokingState) {
 			super(parent, invokingState);
 		}
@@ -928,8 +932,8 @@ public class GikiParser extends Parser {
 		try {
 			enterOuterAlt(_localctx, 1);
 			{
-			setState(160); match(PIPELINE_TO);
-			setState(161); ((PipelineToContext)_localctx).body = preFixOperation();
+			setState(162); match(PIPELINE_TO);
+			setState(163); ((PipelineToContext)_localctx).body = preFixOperation();
 			}
 		}
 		catch (RecognitionException re) {
@@ -944,14 +948,14 @@ public class GikiParser extends Parser {
 	}
 
 	public static class PreFixOperationContext extends ParserRuleContext {
+		public ComposeContext compose() {
+			return getRuleContext(ComposeContext.class,0);
+		}
 		public PreFixRestContext preFixRest() {
 			return getRuleContext(PreFixRestContext.class,0);
 		}
 		public PreFixFileContext preFixFile() {
 			return getRuleContext(PreFixFileContext.class,0);
-		}
-		public ComposeContext compose() {
-			return getRuleContext(ComposeContext.class,0);
 		}
 		public PreFixOperationContext(ParserRuleContext parent, int invokingState) {
 			super(parent, invokingState);
@@ -976,20 +980,21 @@ public class GikiParser extends Parser {
 		PreFixOperationContext _localctx = new PreFixOperationContext(_ctx, getState());
 		enterRule(_localctx, 28, RULE_preFixOperation);
 		try {
-			setState(166);
+			setState(168);
 			switch (_input.LA(1)) {
 			case KEYWORD_REST:
 				enterOuterAlt(_localctx, 1);
 				{
-				setState(163); preFixRest();
+				setState(165); preFixRest();
 				}
 				break;
 			case KEYWORD_FILE:
 				enterOuterAlt(_localctx, 2);
 				{
-				setState(164); preFixFile();
+				setState(166); preFixFile();
 				}
 				break;
+			case DOLLAR:
 			case AT:
 			case CONSUMPTION_STRING:
 			case PRODUCTION_STRING:
@@ -1010,7 +1015,7 @@ public class GikiParser extends Parser {
 			case VERBATIM:
 				enterOuterAlt(_localctx, 3);
 				{
-				setState(165); compose();
+				setState(167); compose();
 				}
 				break;
 			default:
@@ -1059,8 +1064,8 @@ public class GikiParser extends Parser {
 		try {
 			enterOuterAlt(_localctx, 1);
 			{
-			setState(168); match(KEYWORD_REST);
-			setState(169); ((PreFixRestContext)_localctx).expr = preFixOperation();
+			setState(170); match(KEYWORD_REST);
+			setState(171); ((PreFixRestContext)_localctx).expr = preFixOperation();
 			}
 		}
 		catch (RecognitionException re) {
@@ -1105,8 +1110,8 @@ public class GikiParser extends Parser {
 		try {
 			enterOuterAlt(_localctx, 1);
 			{
-			setState(171); match(KEYWORD_FILE);
-			setState(172); ((PreFixFileContext)_localctx).expr = preFixOperation();
+			setState(173); match(KEYWORD_FILE);
+			setState(174); ((PreFixFileContext)_localctx).expr = preFixOperation();
 			}
 		}
 		catch (RecognitionException re) {
@@ -1123,6 +1128,9 @@ public class GikiParser extends Parser {
 	public static class ComposeContext extends ParserRuleContext {
 		public TermsContext lhs;
 		public Token isCompose;
+		public TerminalNode HASH(int i) {
+			return getToken(GikiParser.HASH, i);
+		}
 		public List<TermsContext> terms() {
 			return getRuleContexts(TermsContext.class);
 		}
@@ -1130,9 +1138,6 @@ public class GikiParser extends Parser {
 			return getRuleContext(TermsContext.class,i);
 		}
 		public List<TerminalNode> HASH() { return getTokens(GikiParser.HASH); }
-		public TerminalNode HASH(int i) {
-			return getToken(GikiParser.HASH, i);
-		}
 		public ComposeContext(ParserRuleContext parent, int invokingState) {
 			super(parent, invokingState);
 		}
@@ -1159,18 +1164,18 @@ public class GikiParser extends Parser {
 		try {
 			enterOuterAlt(_localctx, 1);
 			{
-			setState(174); ((ComposeContext)_localctx).lhs = terms();
-			setState(179);
+			setState(176); ((ComposeContext)_localctx).lhs = terms();
+			setState(181);
 			_errHandler.sync(this);
 			_la = _input.LA(1);
 			while (_la==HASH) {
 				{
 				{
-				setState(175); ((ComposeContext)_localctx).isCompose = match(HASH);
-				setState(176); terms();
+				setState(177); ((ComposeContext)_localctx).isCompose = match(HASH);
+				setState(178); terms();
 				}
 				}
-				setState(181);
+				setState(183);
 				_errHandler.sync(this);
 				_la = _input.LA(1);
 			}
@@ -1220,7 +1225,7 @@ public class GikiParser extends Parser {
 			int _alt;
 			enterOuterAlt(_localctx, 1);
 			{
-			setState(183); 
+			setState(185); 
 			_errHandler.sync(this);
 			_alt = getInterpreter().adaptivePredict(_input,14,_ctx);
 			do {
@@ -1228,14 +1233,14 @@ public class GikiParser extends Parser {
 				case 1:
 					{
 					{
-					setState(182); term();
+					setState(184); term();
 					}
 					}
 					break;
 				default:
 					throw new NoViableAltException(this);
 				}
-				setState(185); 
+				setState(187); 
 				_errHandler.sync(this);
 				_alt = getInterpreter().adaptivePredict(_input,14,_ctx);
 			} while ( _alt!=2 && _alt!=-1 );
@@ -1255,11 +1260,11 @@ public class GikiParser extends Parser {
 	public static class TermContext extends ParserRuleContext {
 		public Token isNot;
 		public Token isMulti;
-		public TerminalNode ASTERIX() { return getToken(GikiParser.ASTERIX, 0); }
 		public TerminalNode EXCLAMATION() { return getToken(GikiParser.EXCLAMATION, 0); }
 		public TermValueContext termValue() {
 			return getRuleContext(TermValueContext.class,0);
 		}
+		public TerminalNode ASTERIX() { return getToken(GikiParser.ASTERIX, 0); }
 		public LookupChainContext lookupChain() {
 			return getRuleContext(LookupChainContext.class,0);
 		}
@@ -1289,29 +1294,29 @@ public class GikiParser extends Parser {
 		try {
 			enterOuterAlt(_localctx, 1);
 			{
-			setState(188);
+			setState(190);
 			_la = _input.LA(1);
 			if (_la==EXCLAMATION) {
 				{
-				setState(187); ((TermContext)_localctx).isNot = match(EXCLAMATION);
+				setState(189); ((TermContext)_localctx).isNot = match(EXCLAMATION);
 				}
 			}
 
-			setState(190); termValue();
+			setState(192); termValue();
 			{
-			setState(192);
+			setState(194);
 			_la = _input.LA(1);
 			if (_la==DOT) {
 				{
-				setState(191); lookupChain();
+				setState(193); lookupChain();
 				}
 			}
 
-			setState(195);
+			setState(197);
 			_la = _input.LA(1);
 			if (_la==ASTERIX) {
 				{
-				setState(194); ((TermContext)_localctx).isMulti = match(ASTERIX);
+				setState(196); ((TermContext)_localctx).isMulti = match(ASTERIX);
 				}
 			}
 
@@ -1333,26 +1338,29 @@ public class GikiParser extends Parser {
 		public ProduceVerbatimContext produceVerbatim() {
 			return getRuleContext(ProduceVerbatimContext.class,0);
 		}
-		public QuoteContext quote() {
-			return getRuleContext(QuoteContext.class,0);
-		}
-		public ListContext list() {
-			return getRuleContext(ListContext.class,0);
-		}
-		public MapContext map() {
-			return getRuleContext(MapContext.class,0);
-		}
-		public IoOperationContext ioOperation() {
-			return getRuleContext(IoOperationContext.class,0);
+		public GroupContext group() {
+			return getRuleContext(GroupContext.class,0);
 		}
 		public IntervalContext interval() {
 			return getRuleContext(IntervalContext.class,0);
 		}
-		public GroupContext group() {
-			return getRuleContext(GroupContext.class,0);
+		public IoOperationContext ioOperation() {
+			return getRuleContext(IoOperationContext.class,0);
 		}
 		public IdentifierContext identifier() {
 			return getRuleContext(IdentifierContext.class,0);
+		}
+		public ListContext list() {
+			return getRuleContext(ListContext.class,0);
+		}
+		public InterpolationContext interpolation() {
+			return getRuleContext(InterpolationContext.class,0);
+		}
+		public MapContext map() {
+			return getRuleContext(MapContext.class,0);
+		}
+		public QuoteContext quote() {
+			return getRuleContext(QuoteContext.class,0);
 		}
 		public TermValueContext(ParserRuleContext parent, int invokingState) {
 			super(parent, invokingState);
@@ -1379,53 +1387,59 @@ public class GikiParser extends Parser {
 		try {
 			enterOuterAlt(_localctx, 1);
 			{
-			setState(205);
+			setState(208);
 			switch ( getInterpreter().adaptivePredict(_input,18,_ctx) ) {
 			case 1:
 				{
-				setState(197); interval();
+				setState(199); interval();
 				}
 				break;
 
 			case 2:
 				{
-				setState(198); ioOperation();
+				setState(200); ioOperation();
 				}
 				break;
 
 			case 3:
 				{
-				setState(199); identifier();
+				setState(201); identifier();
 				}
 				break;
 
 			case 4:
 				{
-				setState(200); group();
+				setState(202); group();
 				}
 				break;
 
 			case 5:
 				{
-				setState(201); list();
+				setState(203); list();
 				}
 				break;
 
 			case 6:
 				{
-				setState(202); map();
+				setState(204); map();
 				}
 				break;
 
 			case 7:
 				{
-				setState(203); produceVerbatim();
+				setState(205); produceVerbatim();
 				}
 				break;
 
 			case 8:
 				{
-				setState(204); quote();
+				setState(206); quote();
+				}
+				break;
+
+			case 9:
+				{
+				setState(207); interpolation();
 				}
 				break;
 			}
@@ -1445,11 +1459,11 @@ public class GikiParser extends Parser {
 	public static class LookupChainContext extends ParserRuleContext {
 		public List<TerminalNode> DOT() { return getTokens(GikiParser.DOT); }
 		public List<TerminalNode> ID() { return getTokens(GikiParser.ID); }
-		public TerminalNode DOT(int i) {
-			return getToken(GikiParser.DOT, i);
-		}
 		public TerminalNode ID(int i) {
 			return getToken(GikiParser.ID, i);
+		}
+		public TerminalNode DOT(int i) {
+			return getToken(GikiParser.DOT, i);
 		}
 		public LookupChainContext(ParserRuleContext parent, int invokingState) {
 			super(parent, invokingState);
@@ -1477,17 +1491,17 @@ public class GikiParser extends Parser {
 		try {
 			enterOuterAlt(_localctx, 1);
 			{
-			setState(209); 
+			setState(212); 
 			_errHandler.sync(this);
 			_la = _input.LA(1);
 			do {
 				{
 				{
-				setState(207); match(DOT);
-				setState(208); match(ID);
+				setState(210); match(DOT);
+				setState(211); match(ID);
 				}
 				}
-				setState(211); 
+				setState(214); 
 				_errHandler.sync(this);
 				_la = _input.LA(1);
 			} while ( _la==DOT );
@@ -1539,9 +1553,9 @@ public class GikiParser extends Parser {
 		try {
 			enterOuterAlt(_localctx, 1);
 			{
-			setState(213); ((IntervalContext)_localctx).lhs = produceString();
-			setState(214); match(DOUBLE_DOT);
-			setState(215); ((IntervalContext)_localctx).rhs = produceString();
+			setState(216); ((IntervalContext)_localctx).lhs = produceString();
+			setState(217); match(DOUBLE_DOT);
+			setState(218); ((IntervalContext)_localctx).rhs = produceString();
 			}
 		}
 		catch (RecognitionException re) {
@@ -1558,10 +1572,10 @@ public class GikiParser extends Parser {
 	public static class SlotSetContext extends ParserRuleContext {
 		public ExpressionContext value;
 		public TerminalNode ID() { return getToken(GikiParser.ID, 0); }
+		public TerminalNode COLON() { return getToken(GikiParser.COLON, 0); }
 		public ExpressionContext expression() {
 			return getRuleContext(ExpressionContext.class,0);
 		}
-		public TerminalNode COLON() { return getToken(GikiParser.COLON, 0); }
 		public SlotSetContext(ParserRuleContext parent, int invokingState) {
 			super(parent, invokingState);
 		}
@@ -1587,9 +1601,9 @@ public class GikiParser extends Parser {
 		try {
 			enterOuterAlt(_localctx, 1);
 			{
-			setState(217); match(ID);
-			setState(218); match(COLON);
-			setState(219); ((SlotSetContext)_localctx).value = expression();
+			setState(220); match(ID);
+			setState(221); match(COLON);
+			setState(222); ((SlotSetContext)_localctx).value = expression();
 			}
 		}
 		catch (RecognitionException re) {
@@ -1605,10 +1619,10 @@ public class GikiParser extends Parser {
 
 	public static class GroupContext extends ParserRuleContext {
 		public TerminalNode CLOSE_PARENTHESIS() { return getToken(GikiParser.CLOSE_PARENTHESIS, 0); }
-		public TerminalNode OPEN_PARENTHESIS() { return getToken(GikiParser.OPEN_PARENTHESIS, 0); }
 		public ExpressionsContext expressions() {
 			return getRuleContext(ExpressionsContext.class,0);
 		}
+		public TerminalNode OPEN_PARENTHESIS() { return getToken(GikiParser.OPEN_PARENTHESIS, 0); }
 		public GroupContext(ParserRuleContext parent, int invokingState) {
 			super(parent, invokingState);
 		}
@@ -1634,9 +1648,9 @@ public class GikiParser extends Parser {
 		try {
 			enterOuterAlt(_localctx, 1);
 			{
-			setState(221); match(OPEN_PARENTHESIS);
-			setState(222); expressions();
-			setState(223); match(CLOSE_PARENTHESIS);
+			setState(224); match(OPEN_PARENTHESIS);
+			setState(225); expressions();
+			setState(226); match(CLOSE_PARENTHESIS);
 			}
 		}
 		catch (RecognitionException re) {
@@ -1651,11 +1665,11 @@ public class GikiParser extends Parser {
 	}
 
 	public static class ListContext extends ParserRuleContext {
-		public TerminalNode CLOSE_SQ_BRACKET() { return getToken(GikiParser.CLOSE_SQ_BRACKET, 0); }
-		public TerminalNode OPEN_SQ_BRACKET() { return getToken(GikiParser.OPEN_SQ_BRACKET, 0); }
 		public ExpressionsContext expressions() {
 			return getRuleContext(ExpressionsContext.class,0);
 		}
+		public TerminalNode CLOSE_SQ_BRACKET() { return getToken(GikiParser.CLOSE_SQ_BRACKET, 0); }
+		public TerminalNode OPEN_SQ_BRACKET() { return getToken(GikiParser.OPEN_SQ_BRACKET, 0); }
 		public ListContext(ParserRuleContext parent, int invokingState) {
 			super(parent, invokingState);
 		}
@@ -1682,16 +1696,16 @@ public class GikiParser extends Parser {
 		try {
 			enterOuterAlt(_localctx, 1);
 			{
-			setState(225); match(OPEN_SQ_BRACKET);
-			setState(227);
+			setState(228); match(OPEN_SQ_BRACKET);
+			setState(230);
 			_la = _input.LA(1);
-			if ((((_la) & ~0x3f) == 0 && ((1L << _la) & ((1L << AT) | (1L << CONSUMPTION_STRING) | (1L << PRODUCTION_STRING) | (1L << CONSUMPTION_INT) | (1L << PRODUCTION_INT) | (1L << SINGLE_QUOTE) | (1L << EXCLAMATION) | (1L << CARET) | (1L << NAMED_PRIMITIVE_RETURN) | (1L << NAMED_PRIMITIVE_VARIABLES) | (1L << NAMED_PRIMITIVE_EOF) | (1L << NAMED_PRIMITIVE_NIL) | (1L << KEYWORD_VAR) | (1L << KEYWORD_REST) | (1L << KEYWORD_FILE) | (1L << UNDERSCORE) | (1L << OPEN_SQ_BRACKET) | (1L << OPEN_PARENTHESIS) | (1L << OPEN_BRACKET) | (1L << ID) | (1L << VERBATIM))) != 0)) {
+			if ((((_la) & ~0x3f) == 0 && ((1L << _la) & ((1L << DOLLAR) | (1L << AT) | (1L << CONSUMPTION_STRING) | (1L << PRODUCTION_STRING) | (1L << CONSUMPTION_INT) | (1L << PRODUCTION_INT) | (1L << SINGLE_QUOTE) | (1L << EXCLAMATION) | (1L << CARET) | (1L << NAMED_PRIMITIVE_RETURN) | (1L << NAMED_PRIMITIVE_VARIABLES) | (1L << NAMED_PRIMITIVE_EOF) | (1L << NAMED_PRIMITIVE_NIL) | (1L << KEYWORD_VAR) | (1L << KEYWORD_REST) | (1L << KEYWORD_FILE) | (1L << UNDERSCORE) | (1L << OPEN_SQ_BRACKET) | (1L << OPEN_PARENTHESIS) | (1L << OPEN_BRACKET) | (1L << ID) | (1L << VERBATIM))) != 0)) {
 				{
-				setState(226); expressions();
+				setState(229); expressions();
 				}
 			}
 
-			setState(229); match(CLOSE_SQ_BRACKET);
+			setState(232); match(CLOSE_SQ_BRACKET);
 			}
 		}
 		catch (RecognitionException re) {
@@ -1706,17 +1720,17 @@ public class GikiParser extends Parser {
 	}
 
 	public static class MapContext extends ParserRuleContext {
+		public TerminalNode OPEN_BRACKET() { return getToken(GikiParser.OPEN_BRACKET, 0); }
+		public List<TerminalNode> COMMA() { return getTokens(GikiParser.COMMA); }
 		public List<SlotSetContext> slotSet() {
 			return getRuleContexts(SlotSetContext.class);
 		}
-		public TerminalNode CLOSE_BRACKET() { return getToken(GikiParser.CLOSE_BRACKET, 0); }
-		public List<TerminalNode> COMMA() { return getTokens(GikiParser.COMMA); }
-		public SlotSetContext slotSet(int i) {
-			return getRuleContext(SlotSetContext.class,i);
-		}
-		public TerminalNode OPEN_BRACKET() { return getToken(GikiParser.OPEN_BRACKET, 0); }
 		public TerminalNode COMMA(int i) {
 			return getToken(GikiParser.COMMA, i);
+		}
+		public TerminalNode CLOSE_BRACKET() { return getToken(GikiParser.CLOSE_BRACKET, 0); }
+		public SlotSetContext slotSet(int i) {
+			return getRuleContext(SlotSetContext.class,i);
 		}
 		public MapContext(ParserRuleContext parent, int invokingState) {
 			super(parent, invokingState);
@@ -1744,30 +1758,30 @@ public class GikiParser extends Parser {
 		try {
 			enterOuterAlt(_localctx, 1);
 			{
-			setState(231); match(OPEN_BRACKET);
-			setState(240);
+			setState(234); match(OPEN_BRACKET);
+			setState(243);
 			_la = _input.LA(1);
 			if (_la==ID) {
 				{
-				setState(232); slotSet();
-				setState(237);
+				setState(235); slotSet();
+				setState(240);
 				_errHandler.sync(this);
 				_la = _input.LA(1);
 				while (_la==COMMA) {
 					{
 					{
-					setState(233); match(COMMA);
-					setState(234); slotSet();
+					setState(236); match(COMMA);
+					setState(237); slotSet();
 					}
 					}
-					setState(239);
+					setState(242);
 					_errHandler.sync(this);
 					_la = _input.LA(1);
 				}
 				}
 			}
 
-			setState(242); match(CLOSE_BRACKET);
+			setState(245); match(CLOSE_BRACKET);
 			}
 		}
 		catch (RecognitionException re) {
@@ -1782,30 +1796,30 @@ public class GikiParser extends Parser {
 	}
 
 	public static class IoOperationContext extends ParserRuleContext {
-		public NamedPrimitiveContext namedPrimitive() {
-			return getRuleContext(NamedPrimitiveContext.class,0);
-		}
 		public ConsumeStringContext consumeString() {
 			return getRuleContext(ConsumeStringContext.class,0);
 		}
 		public PeekContext peek() {
 			return getRuleContext(PeekContext.class,0);
 		}
-		public TerminalNode IO_SCOPE() { return getToken(GikiParser.IO_SCOPE, 0); }
-		public ConsumeIntegerContext consumeInteger() {
-			return getRuleContext(ConsumeIntegerContext.class,0);
-		}
-		public NextContext next() {
-			return getRuleContext(NextContext.class,0);
+		public ProduceIntegerContext produceInteger() {
+			return getRuleContext(ProduceIntegerContext.class,0);
 		}
 		public MoveContext move() {
 			return getRuleContext(MoveContext.class,0);
 		}
+		public NextContext next() {
+			return getRuleContext(NextContext.class,0);
+		}
+		public TerminalNode IO_SCOPE() { return getToken(GikiParser.IO_SCOPE, 0); }
 		public ProduceStringContext produceString() {
 			return getRuleContext(ProduceStringContext.class,0);
 		}
-		public ProduceIntegerContext produceInteger() {
-			return getRuleContext(ProduceIntegerContext.class,0);
+		public NamedPrimitiveContext namedPrimitive() {
+			return getRuleContext(NamedPrimitiveContext.class,0);
+		}
+		public ConsumeIntegerContext consumeInteger() {
+			return getRuleContext(ConsumeIntegerContext.class,0);
 		}
 		public IoOperationContext(ParserRuleContext parent, int invokingState) {
 			super(parent, invokingState);
@@ -1833,26 +1847,26 @@ public class GikiParser extends Parser {
 		try {
 			enterOuterAlt(_localctx, 1);
 			{
-			setState(252);
+			setState(255);
 			switch (_input.LA(1)) {
 			case CONSUMPTION_STRING:
 				{
-				setState(244); consumeString();
+				setState(247); consumeString();
 				}
 				break;
 			case PRODUCTION_STRING:
 				{
-				setState(245); produceString();
+				setState(248); produceString();
 				}
 				break;
 			case CONSUMPTION_INT:
 				{
-				setState(246); consumeInteger();
+				setState(249); consumeInteger();
 				}
 				break;
 			case PRODUCTION_INT:
 				{
-				setState(247); produceInteger();
+				setState(250); produceInteger();
 				}
 				break;
 			case NAMED_PRIMITIVE_RETURN:
@@ -1860,32 +1874,32 @@ public class GikiParser extends Parser {
 			case NAMED_PRIMITIVE_EOF:
 			case NAMED_PRIMITIVE_NIL:
 				{
-				setState(248); namedPrimitive();
+				setState(251); namedPrimitive();
 				}
 				break;
 			case CARET:
 				{
-				setState(249); move();
+				setState(252); move();
 				}
 				break;
 			case AT:
 				{
-				setState(250); peek();
+				setState(253); peek();
 				}
 				break;
 			case UNDERSCORE:
 				{
-				setState(251); next();
+				setState(254); next();
 				}
 				break;
 			default:
 				throw new NoViableAltException(this);
 			}
-			setState(255);
+			setState(258);
 			_la = _input.LA(1);
 			if (_la==IO_SCOPE) {
 				{
-				setState(254); match(IO_SCOPE);
+				setState(257); match(IO_SCOPE);
 				}
 			}
 
@@ -1903,14 +1917,14 @@ public class GikiParser extends Parser {
 	}
 
 	public static class IdentifierContext extends ParserRuleContext {
+		public List<TerminalNode> ID() { return getTokens(GikiParser.ID); }
 		public TerminalNode PATH_SEPARATOR(int i) {
 			return getToken(GikiParser.PATH_SEPARATOR, i);
 		}
-		public List<TerminalNode> ID() { return getTokens(GikiParser.ID); }
-		public List<TerminalNode> PATH_SEPARATOR() { return getTokens(GikiParser.PATH_SEPARATOR); }
 		public TerminalNode ID(int i) {
 			return getToken(GikiParser.ID, i);
 		}
+		public List<TerminalNode> PATH_SEPARATOR() { return getTokens(GikiParser.PATH_SEPARATOR); }
 		public IdentifierContext(ParserRuleContext parent, int invokingState) {
 			super(parent, invokingState);
 		}
@@ -1937,18 +1951,18 @@ public class GikiParser extends Parser {
 		try {
 			enterOuterAlt(_localctx, 1);
 			{
-			setState(257); match(ID);
-			setState(262);
+			setState(260); match(ID);
+			setState(265);
 			_errHandler.sync(this);
 			_la = _input.LA(1);
 			while (_la==PATH_SEPARATOR) {
 				{
 				{
-				setState(258); match(PATH_SEPARATOR);
-				setState(259); match(ID);
+				setState(261); match(PATH_SEPARATOR);
+				setState(262); match(ID);
 				}
 				}
-				setState(264);
+				setState(267);
 				_errHandler.sync(this);
 				_la = _input.LA(1);
 			}
@@ -1992,7 +2006,7 @@ public class GikiParser extends Parser {
 		try {
 			enterOuterAlt(_localctx, 1);
 			{
-			setState(265); match(ID);
+			setState(268); match(ID);
 			}
 		}
 		catch (RecognitionException re) {
@@ -2033,7 +2047,7 @@ public class GikiParser extends Parser {
 		try {
 			enterOuterAlt(_localctx, 1);
 			{
-			setState(267); match(CONSUMPTION_STRING);
+			setState(270); match(CONSUMPTION_STRING);
 			}
 		}
 		catch (RecognitionException re) {
@@ -2074,7 +2088,7 @@ public class GikiParser extends Parser {
 		try {
 			enterOuterAlt(_localctx, 1);
 			{
-			setState(269); match(PRODUCTION_STRING);
+			setState(272); match(PRODUCTION_STRING);
 			}
 		}
 		catch (RecognitionException re) {
@@ -2115,7 +2129,7 @@ public class GikiParser extends Parser {
 		try {
 			enterOuterAlt(_localctx, 1);
 			{
-			setState(271); match(CONSUMPTION_INT);
+			setState(274); match(CONSUMPTION_INT);
 			}
 		}
 		catch (RecognitionException re) {
@@ -2156,7 +2170,7 @@ public class GikiParser extends Parser {
 		try {
 			enterOuterAlt(_localctx, 1);
 			{
-			setState(273); match(PRODUCTION_INT);
+			setState(276); match(PRODUCTION_INT);
 			}
 		}
 		catch (RecognitionException re) {
@@ -2172,8 +2186,8 @@ public class GikiParser extends Parser {
 
 	public static class NamedPrimitiveContext extends ParserRuleContext {
 		public TerminalNode NAMED_PRIMITIVE_EOF() { return getToken(GikiParser.NAMED_PRIMITIVE_EOF, 0); }
-		public TerminalNode NAMED_PRIMITIVE_RETURN() { return getToken(GikiParser.NAMED_PRIMITIVE_RETURN, 0); }
 		public TerminalNode NAMED_PRIMITIVE_NIL() { return getToken(GikiParser.NAMED_PRIMITIVE_NIL, 0); }
+		public TerminalNode NAMED_PRIMITIVE_RETURN() { return getToken(GikiParser.NAMED_PRIMITIVE_RETURN, 0); }
 		public TerminalNode NAMED_PRIMITIVE_VARIABLES() { return getToken(GikiParser.NAMED_PRIMITIVE_VARIABLES, 0); }
 		public NamedPrimitiveContext(ParserRuleContext parent, int invokingState) {
 			super(parent, invokingState);
@@ -2201,7 +2215,7 @@ public class GikiParser extends Parser {
 		try {
 			enterOuterAlt(_localctx, 1);
 			{
-			setState(275);
+			setState(278);
 			_la = _input.LA(1);
 			if ( !((((_la) & ~0x3f) == 0 && ((1L << _la) & ((1L << NAMED_PRIMITIVE_RETURN) | (1L << NAMED_PRIMITIVE_VARIABLES) | (1L << NAMED_PRIMITIVE_EOF) | (1L << NAMED_PRIMITIVE_NIL))) != 0)) ) {
 			_errHandler.recoverInline(this);
@@ -2247,7 +2261,7 @@ public class GikiParser extends Parser {
 		try {
 			enterOuterAlt(_localctx, 1);
 			{
-			setState(277); match(CARET);
+			setState(280); match(CARET);
 			}
 		}
 		catch (RecognitionException re) {
@@ -2288,7 +2302,7 @@ public class GikiParser extends Parser {
 		try {
 			enterOuterAlt(_localctx, 1);
 			{
-			setState(279); match(AT);
+			setState(282); match(AT);
 			}
 		}
 		catch (RecognitionException re) {
@@ -2329,7 +2343,7 @@ public class GikiParser extends Parser {
 		try {
 			enterOuterAlt(_localctx, 1);
 			{
-			setState(281); match(UNDERSCORE);
+			setState(284); match(UNDERSCORE);
 			}
 		}
 		catch (RecognitionException re) {
@@ -2371,8 +2385,8 @@ public class GikiParser extends Parser {
 		try {
 			enterOuterAlt(_localctx, 1);
 			{
-			setState(283); match(ID);
-			setState(284); match(COLON);
+			setState(286); match(ID);
+			setState(287); match(COLON);
 			}
 		}
 		catch (RecognitionException re) {
@@ -2413,7 +2427,7 @@ public class GikiParser extends Parser {
 		try {
 			enterOuterAlt(_localctx, 1);
 			{
-			setState(286); match(VERBATIM);
+			setState(289); match(VERBATIM);
 			}
 		}
 		catch (RecognitionException re) {
@@ -2428,10 +2442,10 @@ public class GikiParser extends Parser {
 	}
 
 	public static class QuoteContext extends ParserRuleContext {
-		public TerminalNode SINGLE_QUOTE() { return getToken(GikiParser.SINGLE_QUOTE, 0); }
 		public TermValueContext termValue() {
 			return getRuleContext(TermValueContext.class,0);
 		}
+		public TerminalNode SINGLE_QUOTE() { return getToken(GikiParser.SINGLE_QUOTE, 0); }
 		public QuoteContext(ParserRuleContext parent, int invokingState) {
 			super(parent, invokingState);
 		}
@@ -2457,8 +2471,53 @@ public class GikiParser extends Parser {
 		try {
 			enterOuterAlt(_localctx, 1);
 			{
-			setState(288); match(SINGLE_QUOTE);
-			setState(289); termValue();
+			setState(291); match(SINGLE_QUOTE);
+			setState(292); termValue();
+			}
+		}
+		catch (RecognitionException re) {
+			_localctx.exception = re;
+			_errHandler.reportError(this, re);
+			_errHandler.recover(this, re);
+		}
+		finally {
+			exitRule();
+		}
+		return _localctx;
+	}
+
+	public static class InterpolationContext extends ParserRuleContext {
+		public TerminalNode DOLLAR() { return getToken(GikiParser.DOLLAR, 0); }
+		public TermValueContext termValue() {
+			return getRuleContext(TermValueContext.class,0);
+		}
+		public InterpolationContext(ParserRuleContext parent, int invokingState) {
+			super(parent, invokingState);
+		}
+		@Override public int getRuleIndex() { return RULE_interpolation; }
+		@Override
+		public void enterRule(ParseTreeListener listener) {
+			if ( listener instanceof GikiListener ) ((GikiListener)listener).enterInterpolation(this);
+		}
+		@Override
+		public void exitRule(ParseTreeListener listener) {
+			if ( listener instanceof GikiListener ) ((GikiListener)listener).exitInterpolation(this);
+		}
+		@Override
+		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
+			if ( visitor instanceof GikiVisitor ) return ((GikiVisitor<? extends T>)visitor).visitInterpolation(this);
+			else return visitor.visitChildren(this);
+		}
+	}
+
+	public final InterpolationContext interpolation() throws RecognitionException {
+		InterpolationContext _localctx = new InterpolationContext(_ctx, getState());
+		enterRule(_localctx, 82, RULE_interpolation);
+		try {
+			enterOuterAlt(_localctx, 1);
+			{
+			setState(294); match(DOLLAR);
+			setState(295); termValue();
 			}
 		}
 		catch (RecognitionException re) {
@@ -2473,101 +2532,104 @@ public class GikiParser extends Parser {
 	}
 
 	public static final String _serializedATN =
-		"\3\uacf5\uee8c\u4f5d\u8b0d\u4a45\u78bd\u1b2f\u3378\3\63\u0126\4\2\t\2"+
+		"\3\uacf5\uee8c\u4f5d\u8b0d\u4a45\u78bd\u1b2f\u3378\3\64\u012c\4\2\t\2"+
 		"\4\3\t\3\4\4\t\4\4\5\t\5\4\6\t\6\4\7\t\7\4\b\t\b\4\t\t\t\4\n\t\n\4\13"+
 		"\t\13\4\f\t\f\4\r\t\r\4\16\t\16\4\17\t\17\4\20\t\20\4\21\t\21\4\22\t\22"+
 		"\4\23\t\23\4\24\t\24\4\25\t\25\4\26\t\26\4\27\t\27\4\30\t\30\4\31\t\31"+
 		"\4\32\t\32\4\33\t\33\4\34\t\34\4\35\t\35\4\36\t\36\4\37\t\37\4 \t \4!"+
-		"\t!\4\"\t\"\4#\t#\4$\t$\4%\t%\4&\t&\4\'\t\'\4(\t(\4)\t)\4*\t*\3\2\3\2"+
-		"\3\3\3\3\7\3Y\n\3\f\3\16\3\\\13\3\3\4\3\4\3\4\3\4\3\4\3\4\3\4\3\5\7\5"+
-		"f\n\5\f\5\16\5i\13\5\3\6\3\6\3\6\5\6n\n\6\7\6p\n\6\f\6\16\6s\13\6\3\7"+
-		"\3\7\3\b\3\b\3\b\3\b\5\b{\n\b\3\b\5\b~\n\b\3\t\3\t\3\t\3\t\5\t\u0084\n"+
-		"\t\3\n\3\n\3\n\3\13\3\13\7\13\u008b\n\13\f\13\16\13\u008e\13\13\3\f\3"+
-		"\f\5\f\u0092\n\f\3\f\7\f\u0095\n\f\f\f\16\f\u0098\13\f\3\f\5\f\u009b\n"+
-		"\f\3\r\3\r\3\r\3\16\3\16\3\16\3\17\3\17\3\17\3\20\3\20\3\20\5\20\u00a9"+
-		"\n\20\3\21\3\21\3\21\3\22\3\22\3\22\3\23\3\23\3\23\7\23\u00b4\n\23\f\23"+
-		"\16\23\u00b7\13\23\3\24\6\24\u00ba\n\24\r\24\16\24\u00bb\3\25\5\25\u00bf"+
-		"\n\25\3\25\3\25\5\25\u00c3\n\25\3\25\5\25\u00c6\n\25\3\26\3\26\3\26\3"+
-		"\26\3\26\3\26\3\26\3\26\5\26\u00d0\n\26\3\27\3\27\6\27\u00d4\n\27\r\27"+
-		"\16\27\u00d5\3\30\3\30\3\30\3\30\3\31\3\31\3\31\3\31\3\32\3\32\3\32\3"+
-		"\32\3\33\3\33\5\33\u00e6\n\33\3\33\3\33\3\34\3\34\3\34\3\34\7\34\u00ee"+
-		"\n\34\f\34\16\34\u00f1\13\34\5\34\u00f3\n\34\3\34\3\34\3\35\3\35\3\35"+
-		"\3\35\3\35\3\35\3\35\3\35\5\35\u00ff\n\35\3\35\5\35\u0102\n\35\3\36\3"+
-		"\36\3\36\7\36\u0107\n\36\f\36\16\36\u010a\13\36\3\37\3\37\3 \3 \3!\3!"+
-		"\3\"\3\"\3#\3#\3$\3$\3%\3%\3&\3&\3\'\3\'\3(\3(\3(\3)\3)\3*\3*\3*\3*\2"+
-		"+\2\4\6\b\n\f\16\20\22\24\26\30\32\34\36 \"$&(*,.\60\62\64\668:<>@BDF"+
-		"HJLNPR\2\3\3\2\22\25\u0123\2T\3\2\2\2\4Z\3\2\2\2\6]\3\2\2\2\bg\3\2\2\2"+
-		"\nj\3\2\2\2\ft\3\2\2\2\16}\3\2\2\2\20\u0083\3\2\2\2\22\u0085\3\2\2\2\24"+
-		"\u008c\3\2\2\2\26\u008f\3\2\2\2\30\u009c\3\2\2\2\32\u009f\3\2\2\2\34\u00a2"+
-		"\3\2\2\2\36\u00a8\3\2\2\2 \u00aa\3\2\2\2\"\u00ad\3\2\2\2$\u00b0\3\2\2"+
-		"\2&\u00b9\3\2\2\2(\u00be\3\2\2\2*\u00cf\3\2\2\2,\u00d3\3\2\2\2.\u00d7"+
-		"\3\2\2\2\60\u00db\3\2\2\2\62\u00df\3\2\2\2\64\u00e3\3\2\2\2\66\u00e9\3"+
-		"\2\2\28\u00fe\3\2\2\2:\u0103\3\2\2\2<\u010b\3\2\2\2>\u010d\3\2\2\2@\u010f"+
-		"\3\2\2\2B\u0111\3\2\2\2D\u0113\3\2\2\2F\u0115\3\2\2\2H\u0117\3\2\2\2J"+
-		"\u0119\3\2\2\2L\u011b\3\2\2\2N\u011d\3\2\2\2P\u0120\3\2\2\2R\u0122\3\2"+
-		"\2\2TU\5\4\3\2U\3\3\2\2\2VY\5\6\4\2WY\5\n\6\2XV\3\2\2\2XW\3\2\2\2Y\\\3"+
-		"\2\2\2ZX\3\2\2\2Z[\3\2\2\2[\5\3\2\2\2\\Z\3\2\2\2]^\7\26\2\2^_\5\b\5\2"+
-		"_`\7/\2\2`a\7*\2\2ab\5\4\3\2bc\7+\2\2c\7\3\2\2\2df\7/\2\2ed\3\2\2\2fi"+
-		"\3\2\2\2ge\3\2\2\2gh\3\2\2\2h\t\3\2\2\2ig\3\2\2\2jq\5\f\7\2km\7\21\2\2"+
-		"ln\5\f\7\2ml\3\2\2\2mn\3\2\2\2np\3\2\2\2ok\3\2\2\2ps\3\2\2\2qo\3\2\2\2"+
-		"qr\3\2\2\2r\13\3\2\2\2sq\3\2\2\2tu\5\16\b\2u\r\3\2\2\2vw\7\32\2\2wz\7"+
-		"/\2\2xy\7\'\2\2y{\5\22\n\2zx\3\2\2\2z{\3\2\2\2{~\3\2\2\2|~\5\20\t\2}v"+
-		"\3\2\2\2}|\3\2\2\2~\17\3\2\2\2\177\u0080\7/\2\2\u0080\u0081\7\'\2\2\u0081"+
-		"\u0084\5\22\n\2\u0082\u0084\5\22\n\2\u0083\177\3\2\2\2\u0083\u0082\3\2"+
-		"\2\2\u0084\21\3\2\2\2\u0085\u0086\5\26\f\2\u0086\u0087\5\24\13\2\u0087"+
-		"\23\3\2\2\2\u0088\u0089\7!\2\2\u0089\u008b\5\26\f\2\u008a\u0088\3\2\2"+
-		"\2\u008b\u008e\3\2\2\2\u008c\u008a\3\2\2\2\u008c\u008d\3\2\2\2\u008d\25"+
-		"\3\2\2\2\u008e\u008c\3\2\2\2\u008f\u0091\5\36\20\2\u0090\u0092\5\30\r"+
-		"\2\u0091\u0090\3\2\2\2\u0091\u0092\3\2\2\2\u0092\u0096\3\2\2\2\u0093\u0095"+
-		"\5\32\16\2\u0094\u0093\3\2\2\2\u0095\u0098\3\2\2\2\u0096\u0094\3\2\2\2"+
-		"\u0096\u0097\3\2\2\2\u0097\u009a\3\2\2\2\u0098\u0096\3\2\2\2\u0099\u009b"+
-		"\5\34\17\2\u009a\u0099\3\2\2\2\u009a\u009b\3\2\2\2\u009b\27\3\2\2\2\u009c"+
-		"\u009d\7\37\2\2\u009d\u009e\5\36\20\2\u009e\31\3\2\2\2\u009f\u00a0\7\36"+
-		"\2\2\u00a0\u00a1\5\36\20\2\u00a1\33\3\2\2\2\u00a2\u00a3\7 \2\2\u00a3\u00a4"+
-		"\5\36\20\2\u00a4\35\3\2\2\2\u00a5\u00a9\5 \21\2\u00a6\u00a9\5\"\22\2\u00a7"+
-		"\u00a9\5$\23\2\u00a8\u00a5\3\2\2\2\u00a8\u00a6\3\2\2\2\u00a8\u00a7\3\2"+
-		"\2\2\u00a9\37\3\2\2\2\u00aa\u00ab\7\33\2\2\u00ab\u00ac\5\36\20\2\u00ac"+
-		"!\3\2\2\2\u00ad\u00ae\7\35\2\2\u00ae\u00af\5\36\20\2\u00af#\3\2\2\2\u00b0"+
-		"\u00b5\5&\24\2\u00b1\u00b2\7\5\2\2\u00b2\u00b4\5&\24\2\u00b3\u00b1\3\2"+
-		"\2\2\u00b4\u00b7\3\2\2\2\u00b5\u00b3\3\2\2\2\u00b5\u00b6\3\2\2\2\u00b6"+
-		"%\3\2\2\2\u00b7\u00b5\3\2\2\2\u00b8\u00ba\5(\25\2\u00b9\u00b8\3\2\2\2"+
-		"\u00ba\u00bb\3\2\2\2\u00bb\u00b9\3\2\2\2\u00bb\u00bc\3\2\2\2\u00bc\'\3"+
-		"\2\2\2\u00bd\u00bf\7\r\2\2\u00be\u00bd\3\2\2\2\u00be\u00bf\3\2\2\2\u00bf"+
-		"\u00c0\3\2\2\2\u00c0\u00c2\5*\26\2\u00c1\u00c3\5,\27\2\u00c2\u00c1\3\2"+
-		"\2\2\u00c2\u00c3\3\2\2\2\u00c3\u00c5\3\2\2\2\u00c4\u00c6\7#\2\2\u00c5"+
-		"\u00c4\3\2\2\2\u00c5\u00c6\3\2\2\2\u00c6)\3\2\2\2\u00c7\u00d0\5.\30\2"+
-		"\u00c8\u00d0\58\35\2\u00c9\u00d0\5:\36\2\u00ca\u00d0\5\62\32\2\u00cb\u00d0"+
-		"\5\64\33\2\u00cc\u00d0\5\66\34\2\u00cd\u00d0\5P)\2\u00ce\u00d0\5R*\2\u00cf"+
-		"\u00c7\3\2\2\2\u00cf\u00c8\3\2\2\2\u00cf\u00c9\3\2\2\2\u00cf\u00ca\3\2"+
-		"\2\2\u00cf\u00cb\3\2\2\2\u00cf\u00cc\3\2\2\2\u00cf\u00cd\3\2\2\2\u00cf"+
-		"\u00ce\3\2\2\2\u00d0+\3\2\2\2\u00d1\u00d2\7&\2\2\u00d2\u00d4\7/\2\2\u00d3"+
-		"\u00d1\3\2\2\2\u00d4\u00d5\3\2\2\2\u00d5\u00d3\3\2\2\2\u00d5\u00d6\3\2"+
-		"\2\2\u00d6-\3\2\2\2\u00d7\u00d8\5@!\2\u00d8\u00d9\7\20\2\2\u00d9\u00da"+
-		"\5@!\2\u00da/\3\2\2\2\u00db\u00dc\7/\2\2\u00dc\u00dd\7%\2\2\u00dd\u00de"+
-		"\5\f\7\2\u00de\61\3\2\2\2\u00df\u00e0\7*\2\2\u00e0\u00e1\5\n\6\2\u00e1"+
-		"\u00e2\7+\2\2\u00e2\63\3\2\2\2\u00e3\u00e5\7(\2\2\u00e4\u00e6\5\n\6\2"+
-		"\u00e5\u00e4\3\2\2\2\u00e5\u00e6\3\2\2\2\u00e6\u00e7\3\2\2\2\u00e7\u00e8"+
-		"\7)\2\2\u00e8\65\3\2\2\2\u00e9\u00f2\7,\2\2\u00ea\u00ef\5\60\31\2\u00eb"+
-		"\u00ec\7\3\2\2\u00ec\u00ee\5\60\31\2\u00ed\u00eb\3\2\2\2\u00ee\u00f1\3"+
-		"\2\2\2\u00ef\u00ed\3\2\2\2\u00ef\u00f0\3\2\2\2\u00f0\u00f3\3\2\2\2\u00f1"+
-		"\u00ef\3\2\2\2\u00f2\u00ea\3\2\2\2\u00f2\u00f3\3\2\2\2\u00f3\u00f4\3\2"+
-		"\2\2\u00f4\u00f5\7-\2\2\u00f5\67\3\2\2\2\u00f6\u00ff\5> \2\u00f7\u00ff"+
-		"\5@!\2\u00f8\u00ff\5B\"\2\u00f9\u00ff\5D#\2\u00fa\u00ff\5F$\2\u00fb\u00ff"+
-		"\5H%\2\u00fc\u00ff\5J&\2\u00fd\u00ff\5L\'\2\u00fe\u00f6\3\2\2\2\u00fe"+
-		"\u00f7\3\2\2\2\u00fe\u00f8\3\2\2\2\u00fe\u00f9\3\2\2\2\u00fe\u00fa\3\2"+
-		"\2\2\u00fe\u00fb\3\2\2\2\u00fe\u00fc\3\2\2\2\u00fe\u00fd\3\2\2\2\u00ff"+
-		"\u0101\3\2\2\2\u0100\u0102\7\13\2\2\u0101\u0100\3\2\2\2\u0101\u0102\3"+
-		"\2\2\2\u01029\3\2\2\2\u0103\u0108\7/\2\2\u0104\u0105\7\17\2\2\u0105\u0107"+
-		"\7/\2\2\u0106\u0104\3\2\2\2\u0107\u010a\3\2\2\2\u0108\u0106\3\2\2\2\u0108"+
-		"\u0109\3\2\2\2\u0109;\3\2\2\2\u010a\u0108\3\2\2\2\u010b\u010c\7/\2\2\u010c"+
-		"=\3\2\2\2\u010d\u010e\7\7\2\2\u010e?\3\2\2\2\u010f\u0110\7\b\2\2\u0110"+
-		"A\3\2\2\2\u0111\u0112\7\t\2\2\u0112C\3\2\2\2\u0113\u0114\7\n\2\2\u0114"+
-		"E\3\2\2\2\u0115\u0116\t\2\2\2\u0116G\3\2\2\2\u0117\u0118\7\16\2\2\u0118"+
-		"I\3\2\2\2\u0119\u011a\7\4\2\2\u011aK\3\2\2\2\u011b\u011c\7\"\2\2\u011c"+
-		"M\3\2\2\2\u011d\u011e\7/\2\2\u011e\u011f\7%\2\2\u011fO\3\2\2\2\u0120\u0121"+
-		"\7\63\2\2\u0121Q\3\2\2\2\u0122\u0123\7\f\2\2\u0123\u0124\5*\26\2\u0124"+
-		"S\3\2\2\2\34XZgmqz}\u0083\u008c\u0091\u0096\u009a\u00a8\u00b5\u00bb\u00be"+
-		"\u00c2\u00c5\u00cf\u00d5\u00e5\u00ef\u00f2\u00fe\u0101\u0108";
+		"\t!\4\"\t\"\4#\t#\4$\t$\4%\t%\4&\t&\4\'\t\'\4(\t(\4)\t)\4*\t*\4+\t+\3"+
+		"\2\3\2\3\3\3\3\7\3[\n\3\f\3\16\3^\13\3\3\4\3\4\3\4\3\4\3\4\3\4\3\4\3\5"+
+		"\7\5h\n\5\f\5\16\5k\13\5\3\6\3\6\3\6\5\6p\n\6\7\6r\n\6\f\6\16\6u\13\6"+
+		"\3\7\3\7\3\b\3\b\3\b\3\b\5\b}\n\b\3\b\5\b\u0080\n\b\3\t\3\t\3\t\3\t\5"+
+		"\t\u0086\n\t\3\n\3\n\3\n\3\13\3\13\7\13\u008d\n\13\f\13\16\13\u0090\13"+
+		"\13\3\f\3\f\5\f\u0094\n\f\3\f\7\f\u0097\n\f\f\f\16\f\u009a\13\f\3\f\5"+
+		"\f\u009d\n\f\3\r\3\r\3\r\3\16\3\16\3\16\3\17\3\17\3\17\3\20\3\20\3\20"+
+		"\5\20\u00ab\n\20\3\21\3\21\3\21\3\22\3\22\3\22\3\23\3\23\3\23\7\23\u00b6"+
+		"\n\23\f\23\16\23\u00b9\13\23\3\24\6\24\u00bc\n\24\r\24\16\24\u00bd\3\25"+
+		"\5\25\u00c1\n\25\3\25\3\25\5\25\u00c5\n\25\3\25\5\25\u00c8\n\25\3\26\3"+
+		"\26\3\26\3\26\3\26\3\26\3\26\3\26\3\26\5\26\u00d3\n\26\3\27\3\27\6\27"+
+		"\u00d7\n\27\r\27\16\27\u00d8\3\30\3\30\3\30\3\30\3\31\3\31\3\31\3\31\3"+
+		"\32\3\32\3\32\3\32\3\33\3\33\5\33\u00e9\n\33\3\33\3\33\3\34\3\34\3\34"+
+		"\3\34\7\34\u00f1\n\34\f\34\16\34\u00f4\13\34\5\34\u00f6\n\34\3\34\3\34"+
+		"\3\35\3\35\3\35\3\35\3\35\3\35\3\35\3\35\5\35\u0102\n\35\3\35\5\35\u0105"+
+		"\n\35\3\36\3\36\3\36\7\36\u010a\n\36\f\36\16\36\u010d\13\36\3\37\3\37"+
+		"\3 \3 \3!\3!\3\"\3\"\3#\3#\3$\3$\3%\3%\3&\3&\3\'\3\'\3(\3(\3(\3)\3)\3"+
+		"*\3*\3*\3+\3+\3+\3+\2,\2\4\6\b\n\f\16\20\22\24\26\30\32\34\36 \"$&(*,"+
+		".\60\62\64\668:<>@BDFHJLNPRT\2\3\3\2\23\26\u0129\2V\3\2\2\2\4\\\3\2\2"+
+		"\2\6_\3\2\2\2\bi\3\2\2\2\nl\3\2\2\2\fv\3\2\2\2\16\177\3\2\2\2\20\u0085"+
+		"\3\2\2\2\22\u0087\3\2\2\2\24\u008e\3\2\2\2\26\u0091\3\2\2\2\30\u009e\3"+
+		"\2\2\2\32\u00a1\3\2\2\2\34\u00a4\3\2\2\2\36\u00aa\3\2\2\2 \u00ac\3\2\2"+
+		"\2\"\u00af\3\2\2\2$\u00b2\3\2\2\2&\u00bb\3\2\2\2(\u00c0\3\2\2\2*\u00d2"+
+		"\3\2\2\2,\u00d6\3\2\2\2.\u00da\3\2\2\2\60\u00de\3\2\2\2\62\u00e2\3\2\2"+
+		"\2\64\u00e6\3\2\2\2\66\u00ec\3\2\2\28\u0101\3\2\2\2:\u0106\3\2\2\2<\u010e"+
+		"\3\2\2\2>\u0110\3\2\2\2@\u0112\3\2\2\2B\u0114\3\2\2\2D\u0116\3\2\2\2F"+
+		"\u0118\3\2\2\2H\u011a\3\2\2\2J\u011c\3\2\2\2L\u011e\3\2\2\2N\u0120\3\2"+
+		"\2\2P\u0123\3\2\2\2R\u0125\3\2\2\2T\u0128\3\2\2\2VW\5\4\3\2W\3\3\2\2\2"+
+		"X[\5\6\4\2Y[\5\n\6\2ZX\3\2\2\2ZY\3\2\2\2[^\3\2\2\2\\Z\3\2\2\2\\]\3\2\2"+
+		"\2]\5\3\2\2\2^\\\3\2\2\2_`\7\27\2\2`a\5\b\5\2ab\7\60\2\2bc\7+\2\2cd\5"+
+		"\4\3\2de\7,\2\2e\7\3\2\2\2fh\7\60\2\2gf\3\2\2\2hk\3\2\2\2ig\3\2\2\2ij"+
+		"\3\2\2\2j\t\3\2\2\2ki\3\2\2\2ls\5\f\7\2mo\7\22\2\2np\5\f\7\2on\3\2\2\2"+
+		"op\3\2\2\2pr\3\2\2\2qm\3\2\2\2ru\3\2\2\2sq\3\2\2\2st\3\2\2\2t\13\3\2\2"+
+		"\2us\3\2\2\2vw\5\16\b\2w\r\3\2\2\2xy\7\33\2\2y|\7\60\2\2z{\7(\2\2{}\5"+
+		"\22\n\2|z\3\2\2\2|}\3\2\2\2}\u0080\3\2\2\2~\u0080\5\20\t\2\177x\3\2\2"+
+		"\2\177~\3\2\2\2\u0080\17\3\2\2\2\u0081\u0082\7\60\2\2\u0082\u0083\7(\2"+
+		"\2\u0083\u0086\5\22\n\2\u0084\u0086\5\22\n\2\u0085\u0081\3\2\2\2\u0085"+
+		"\u0084\3\2\2\2\u0086\21\3\2\2\2\u0087\u0088\5\26\f\2\u0088\u0089\5\24"+
+		"\13\2\u0089\23\3\2\2\2\u008a\u008b\7\"\2\2\u008b\u008d\5\26\f\2\u008c"+
+		"\u008a\3\2\2\2\u008d\u0090\3\2\2\2\u008e\u008c\3\2\2\2\u008e\u008f\3\2"+
+		"\2\2\u008f\25\3\2\2\2\u0090\u008e\3\2\2\2\u0091\u0093\5\36\20\2\u0092"+
+		"\u0094\5\30\r\2\u0093\u0092\3\2\2\2\u0093\u0094\3\2\2\2\u0094\u0098\3"+
+		"\2\2\2\u0095\u0097\5\32\16\2\u0096\u0095\3\2\2\2\u0097\u009a\3\2\2\2\u0098"+
+		"\u0096\3\2\2\2\u0098\u0099\3\2\2\2\u0099\u009c\3\2\2\2\u009a\u0098\3\2"+
+		"\2\2\u009b\u009d\5\34\17\2\u009c\u009b\3\2\2\2\u009c\u009d\3\2\2\2\u009d"+
+		"\27\3\2\2\2\u009e\u009f\7 \2\2\u009f\u00a0\5\36\20\2\u00a0\31\3\2\2\2"+
+		"\u00a1\u00a2\7\37\2\2\u00a2\u00a3\5\36\20\2\u00a3\33\3\2\2\2\u00a4\u00a5"+
+		"\7!\2\2\u00a5\u00a6\5\36\20\2\u00a6\35\3\2\2\2\u00a7\u00ab\5 \21\2\u00a8"+
+		"\u00ab\5\"\22\2\u00a9\u00ab\5$\23\2\u00aa\u00a7\3\2\2\2\u00aa\u00a8\3"+
+		"\2\2\2\u00aa\u00a9\3\2\2\2\u00ab\37\3\2\2\2\u00ac\u00ad\7\34\2\2\u00ad"+
+		"\u00ae\5\36\20\2\u00ae!\3\2\2\2\u00af\u00b0\7\36\2\2\u00b0\u00b1\5\36"+
+		"\20\2\u00b1#\3\2\2\2\u00b2\u00b7\5&\24\2\u00b3\u00b4\7\6\2\2\u00b4\u00b6"+
+		"\5&\24\2\u00b5\u00b3\3\2\2\2\u00b6\u00b9\3\2\2\2\u00b7\u00b5\3\2\2\2\u00b7"+
+		"\u00b8\3\2\2\2\u00b8%\3\2\2\2\u00b9\u00b7\3\2\2\2\u00ba\u00bc\5(\25\2"+
+		"\u00bb\u00ba\3\2\2\2\u00bc\u00bd\3\2\2\2\u00bd\u00bb\3\2\2\2\u00bd\u00be"+
+		"\3\2\2\2\u00be\'\3\2\2\2\u00bf\u00c1\7\16\2\2\u00c0\u00bf\3\2\2\2\u00c0"+
+		"\u00c1\3\2\2\2\u00c1\u00c2\3\2\2\2\u00c2\u00c4\5*\26\2\u00c3\u00c5\5,"+
+		"\27\2\u00c4\u00c3\3\2\2\2\u00c4\u00c5\3\2\2\2\u00c5\u00c7\3\2\2\2\u00c6"+
+		"\u00c8\7$\2\2\u00c7\u00c6\3\2\2\2\u00c7\u00c8\3\2\2\2\u00c8)\3\2\2\2\u00c9"+
+		"\u00d3\5.\30\2\u00ca\u00d3\58\35\2\u00cb\u00d3\5:\36\2\u00cc\u00d3\5\62"+
+		"\32\2\u00cd\u00d3\5\64\33\2\u00ce\u00d3\5\66\34\2\u00cf\u00d3\5P)\2\u00d0"+
+		"\u00d3\5R*\2\u00d1\u00d3\5T+\2\u00d2\u00c9\3\2\2\2\u00d2\u00ca\3\2\2\2"+
+		"\u00d2\u00cb\3\2\2\2\u00d2\u00cc\3\2\2\2\u00d2\u00cd\3\2\2\2\u00d2\u00ce"+
+		"\3\2\2\2\u00d2\u00cf\3\2\2\2\u00d2\u00d0\3\2\2\2\u00d2\u00d1\3\2\2\2\u00d3"+
+		"+\3\2\2\2\u00d4\u00d5\7\'\2\2\u00d5\u00d7\7\60\2\2\u00d6\u00d4\3\2\2\2"+
+		"\u00d7\u00d8\3\2\2\2\u00d8\u00d6\3\2\2\2\u00d8\u00d9\3\2\2\2\u00d9-\3"+
+		"\2\2\2\u00da\u00db\5@!\2\u00db\u00dc\7\21\2\2\u00dc\u00dd\5@!\2\u00dd"+
+		"/\3\2\2\2\u00de\u00df\7\60\2\2\u00df\u00e0\7&\2\2\u00e0\u00e1\5\f\7\2"+
+		"\u00e1\61\3\2\2\2\u00e2\u00e3\7+\2\2\u00e3\u00e4\5\n\6\2\u00e4\u00e5\7"+
+		",\2\2\u00e5\63\3\2\2\2\u00e6\u00e8\7)\2\2\u00e7\u00e9\5\n\6\2\u00e8\u00e7"+
+		"\3\2\2\2\u00e8\u00e9\3\2\2\2\u00e9\u00ea\3\2\2\2\u00ea\u00eb\7*\2\2\u00eb"+
+		"\65\3\2\2\2\u00ec\u00f5\7-\2\2\u00ed\u00f2\5\60\31\2\u00ee\u00ef\7\4\2"+
+		"\2\u00ef\u00f1\5\60\31\2\u00f0\u00ee\3\2\2\2\u00f1\u00f4\3\2\2\2\u00f2"+
+		"\u00f0\3\2\2\2\u00f2\u00f3\3\2\2\2\u00f3\u00f6\3\2\2\2\u00f4\u00f2\3\2"+
+		"\2\2\u00f5\u00ed\3\2\2\2\u00f5\u00f6\3\2\2\2\u00f6\u00f7\3\2\2\2\u00f7"+
+		"\u00f8\7.\2\2\u00f8\67\3\2\2\2\u00f9\u0102\5> \2\u00fa\u0102\5@!\2\u00fb"+
+		"\u0102\5B\"\2\u00fc\u0102\5D#\2\u00fd\u0102\5F$\2\u00fe\u0102\5H%\2\u00ff"+
+		"\u0102\5J&\2\u0100\u0102\5L\'\2\u0101\u00f9\3\2\2\2\u0101\u00fa\3\2\2"+
+		"\2\u0101\u00fb\3\2\2\2\u0101\u00fc\3\2\2\2\u0101\u00fd\3\2\2\2\u0101\u00fe"+
+		"\3\2\2\2\u0101\u00ff\3\2\2\2\u0101\u0100\3\2\2\2\u0102\u0104\3\2\2\2\u0103"+
+		"\u0105\7\f\2\2\u0104\u0103\3\2\2\2\u0104\u0105\3\2\2\2\u01059\3\2\2\2"+
+		"\u0106\u010b\7\60\2\2\u0107\u0108\7\20\2\2\u0108\u010a\7\60\2\2\u0109"+
+		"\u0107\3\2\2\2\u010a\u010d\3\2\2\2\u010b\u0109\3\2\2\2\u010b\u010c\3\2"+
+		"\2\2\u010c;\3\2\2\2\u010d\u010b\3\2\2\2\u010e\u010f\7\60\2\2\u010f=\3"+
+		"\2\2\2\u0110\u0111\7\b\2\2\u0111?\3\2\2\2\u0112\u0113\7\t\2\2\u0113A\3"+
+		"\2\2\2\u0114\u0115\7\n\2\2\u0115C\3\2\2\2\u0116\u0117\7\13\2\2\u0117E"+
+		"\3\2\2\2\u0118\u0119\t\2\2\2\u0119G\3\2\2\2\u011a\u011b\7\17\2\2\u011b"+
+		"I\3\2\2\2\u011c\u011d\7\5\2\2\u011dK\3\2\2\2\u011e\u011f\7#\2\2\u011f"+
+		"M\3\2\2\2\u0120\u0121\7\60\2\2\u0121\u0122\7&\2\2\u0122O\3\2\2\2\u0123"+
+		"\u0124\7\64\2\2\u0124Q\3\2\2\2\u0125\u0126\7\r\2\2\u0126\u0127\5*\26\2"+
+		"\u0127S\3\2\2\2\u0128\u0129\7\3\2\2\u0129\u012a\5*\26\2\u012aU\3\2\2\2"+
+		"\34Z\\ios|\177\u0085\u008e\u0093\u0098\u009c\u00aa\u00b7\u00bd\u00c0\u00c4"+
+		"\u00c7\u00d2\u00d8\u00e8\u00f2\u00f5\u0101\u0104\u010b";
 	public static final ATN _ATN =
 		ATNSimulator.deserialize(_serializedATN.toCharArray());
 	static {

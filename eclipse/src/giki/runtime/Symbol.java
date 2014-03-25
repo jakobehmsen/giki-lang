@@ -1,14 +1,11 @@
 package giki.runtime;
 
-import giki.runtime.Container.Default;
-import giki.runtime.Symbol.Identifier;
-
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Hashtable;
 import java.util.List;
 
-public class Symbol {
+public abstract class Symbol {
 	private static Hashtable<String, Symbol.Identifier> nameToIdentifierMap = new Hashtable<String, Symbol.Identifier>();
 	
 	public static Identifier getIdentifier(String name) {
@@ -106,6 +103,7 @@ public class Symbol {
 		public static final Identifier AST_TYPE_MODULE_USAGE = Symbol.Identifier.getIdentifier("moduleUsage");
 		public static final Identifier AST_TYPE_VARIABLE_USAGE = Symbol.Identifier.getIdentifier("variableUsage");
 		public static final Identifier AST_TYPE_CALL = Symbol.Identifier.getIdentifier("call");
+		public static final Identifier AST_TYPE_INTERPOLATE = Symbol.Identifier.getIdentifier("interpolate");
 		
 		public static final java.lang.Integer KEY_IDENTIFIER = SymbolTable.getSymbolCodeInteger("identifier");
 		public static final java.lang.Integer KEY_VALUE = SymbolTable.getSymbolCodeInteger("value");
@@ -364,5 +362,15 @@ public class Symbol {
 	public static Symbol astCall(Symbol ast) {
 		return ast(Symbol.Map.AST_TYPE_CALL)
 			.with(Symbol.Map.KEY_TARGET, ast);
+	}
+
+	public static Symbol astInterpolate(Symbol body) {
+		return ast(Symbol.Map.AST_TYPE_INTERPOLATE)
+			.with(Symbol.Map.KEY_TARGET, body);
+	}
+
+	public static Symbol astVariableUsage(String identifier) {
+		return ast(Symbol.Map.AST_TYPE_VARIABLE_USAGE)
+			.with(Symbol.Map.KEY_IDENTIFIER, Symbol.getIdentifier(identifier));
 	}
 }

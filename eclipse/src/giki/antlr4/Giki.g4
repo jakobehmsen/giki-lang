@@ -50,7 +50,7 @@ term:
     ;
 termValue: 
     (interval | ioOperation | identifier | group | list | map | 
-    produceVerbatim | quote);
+    produceVerbatim | quote | interpolation);
 lookupChain: (DOT ID)+;
 interval: lhs=produceString DOUBLE_DOT rhs=produceString;
 slotSet: ID COLON value=expression;
@@ -79,7 +79,9 @@ next: UNDERSCORE;
 label: ID COLON;
 produceVerbatim: VERBATIM;
 quote: SINGLE_QUOTE termValue;
+interpolation: DOLLAR termValue;
 
+DOLLAR: '$';
 COMMA: ',';
 AT: '@';
 HASH: '#';

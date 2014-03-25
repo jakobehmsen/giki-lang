@@ -9,6 +9,7 @@ import giki.antlr4.GikiParser.ExpressionContext;
 import giki.antlr4.GikiParser.ExpressionsContext;
 import giki.antlr4.GikiParser.GroupContext;
 import giki.antlr4.GikiParser.IdentifierContext;
+import giki.antlr4.GikiParser.InterpolationContext;
 import giki.antlr4.GikiParser.IntervalContext;
 import giki.antlr4.GikiParser.ListContext;
 import giki.antlr4.GikiParser.MapContext;
@@ -126,11 +127,11 @@ public class Parser {
 //			this.codeBuilder = codeBuilder;
 //		}
 		
-		public final Symbol ast;
+		public final Func0<Symbol> astInterpolater;
 		public final ParseContext parseContext;
 		
-		public MetaModule(Symbol ast, ParseContext parseContext) {
-			this.ast = ast;
+		public MetaModule(Func0<Symbol> astInterpolater, ParseContext parseContext) {
+			this.astInterpolater = astInterpolater;
 			this.parseContext = parseContext;
 		}
 	}
@@ -165,7 +166,7 @@ public class Parser {
 		
 		MetaModule metaModule = toBuild(ressourcePath, expressionsCtxs);
 		
-		return new Module(ressourcePath, path, name, metaModule.ast, metaModule.parseContext, /*metaModule.codeBuilder,*/ modifiers, innerModules/*, metaModule.validation.getDependencies()*/);
+		return new Module(ressourcePath, path, name, metaModule.astInterpolater, metaModule.parseContext, /*metaModule.codeBuilder,*/ modifiers, innerModules/*, metaModule.validation.getDependencies()*/);
 	}
 	
 	public static class IdentifierUsage {
@@ -195,26 +196,42 @@ public class Parser {
 			variables.add(identifier);
 		}
 
-		public void assignVariable(ResourceLocation location, String identifier, Symbol value) {
+		public void assignVariable(ResourceLocation location, String identifier, Func0<Symbol> valueInterpolation) {
 			if(!variables.contains(identifier))
 				messages.add(new ParseMessage(location, "Assigning value to undeclared variable " + identifier + "."));
 		}
 
-		public Symbol.Map identifierUsage(ResourceLocation location, String identifier) {
+		public Func0<Symbol>/*Symbol.Map*/ identifierUsage(ResourceLocation location, String identifier) {
 			Symbol.Map astPlaceHolder = (Symbol.Map)Symbol.astPlaceHolder(identifier);
 			
 			if(variables.contains(identifier)) {
-				astPlaceHolder.put(Symbol.Map.KEY_TYPE, Symbol.Map.AST_TYPE_VARIABLE_USAGE);
+				Symbol astVariableUsage = Symbol.astVariableUsage(identifier);
+				
+				return Func0.Constant.wrap(astVariableUsage);
+				
+//				astPlaceHolder.put(Symbol.Map.KEY_TYPE, Symbol.Map.AST_TYPE_VARIABLE_USAGE);
 			} else {
-				ArrayList<IdentifierUsage> usages = unresolvedIdentifierUsages.get(identifier);
-				if(usages == null) {
-					usages = new ArrayList<Parser.IdentifierUsage>();
-					unresolvedIdentifierUsages.put(identifier, usages);
-				}
-				usages.add(new IdentifierUsage(location, astPlaceHolder, identifier));
+//				Symbol.Map astPlaceHolder = (Symbol.Map)Symbol.astPlaceHolder(identifier);
+//				ArrayList<IdentifierUsage> usages = unresolvedIdentifierUsages.get(identifier);
+//				if(usages == null) {
+//					usages = new ArrayList<Parser.IdentifierUsage>();
+//					unresolvedIdentifierUsages.put(identifier, usages);
+//				}
+//				usages.add(new IdentifierUsage(location, astPlaceHolder, identifier));
+//				return astPlaceHolder;
+				
+				return new Func0<Symbol>() {
+					@Override
+					public Symbol call() {
+//						// Identifier usage should be coupled to meta arguments
+//						// - then it is possible to associate modules with specific kinds of usage, cache these associations, and thereby support circular dependencies.
+						// TODO Auto-generated method stub
+						return null;
+					}
+				};
 			}
 			
-			return astPlaceHolder;
+//			return astPlaceHolder;
 		}
 
 		public Set<String> unresolvedDependency() {
@@ -225,7 +242,7 @@ public class Parser {
 			return resolvedIdentifierUsages.keySet();
 		}
 
-		public void resolveDependency(String identifier, Module depender) {
+		public void resolveIdentifierUsage(String identifier, Module depender) {
 			ArrayList<IdentifierUsage> usages = unresolvedIdentifierUsages.get(identifier);
 			
 			if(usages != null) {
@@ -268,77 +285,77 @@ public class Parser {
 	
 	private static MetaModule toBuild(String resourceName, ArrayList<ParserRuleContext> ctxs) {
 		ParseContext parseContext = new ParseContext();
-		Symbol ast = toSymbol(parseContext, resourceName, ctxs);
-		return new MetaModule(ast, parseContext);
+		Func0<Symbol> astInterpolater = toSymbol(parseContext, resourceName, ctxs);
+		return new MetaModule(astInterpolater, parseContext);
 	}
 	
-	public Symbol toSymbol(final Resource resource) throws IOException {
-		final InputStream inputStream = resource.getInputStream();
-		final BufferedInputStream bufferedInput = new BufferedInputStream(inputStream);
-
-		ANTLRInputStream antlrInputStream = new ANTLRInputStream(bufferedInput);
-		GikiLexer lexer = new giki.antlr4.GikiLexer(antlrInputStream);
-		CommonTokenStream tokenStream = new CommonTokenStream(lexer);
-		giki.antlr4.GikiParser parser = new GikiParser(tokenStream);
-		parser.getInterpreter().setPredictionMode(PredictionMode.SLL);
-		
-		final ArrayList<ParseMessage> parseMessages = new ArrayList<ParseMessage>();
-		
-		parser.addErrorListener(new BaseErrorListener() {
-			@Override
-			public void syntaxError(@NotNull Recognizer<?, ?> recognizer,
-					@Nullable Object offendingSymbol, int line,
-					int charPositionInLine, @NotNull String msg,
-					@Nullable RecognitionException e) {
-				parseMessages.add(new ParseMessage(new ResourceLocation(resource.getName(), line, charPositionInLine), msg));
-			}
-		});
-		
-		ProgramContext programCtx = null;
-		
-		try {
-			programCtx = parser.program();  // STAGE 1
-		}
-		catch (Exception ex) {
-			lexer.reset(); // rewind input stream
-		    parser.reset();
-		    parser.getInterpreter().setPredictionMode(PredictionMode.LL);
-		    programCtx = parser.program();  // STAGE 2
-		    // if we parse ok, it's LL not SLL
-		}
-
-		Symbol module = toSymbol(resource.getPath(), resource.getPath(), resource.getName(), programCtx.programElements());
-		
-		return module;
-	}
+//	public Symbol toSymbol(final Resource resource) throws IOException {
+//		final InputStream inputStream = resource.getInputStream();
+//		final BufferedInputStream bufferedInput = new BufferedInputStream(inputStream);
+//
+//		ANTLRInputStream antlrInputStream = new ANTLRInputStream(bufferedInput);
+//		GikiLexer lexer = new giki.antlr4.GikiLexer(antlrInputStream);
+//		CommonTokenStream tokenStream = new CommonTokenStream(lexer);
+//		giki.antlr4.GikiParser parser = new GikiParser(tokenStream);
+//		parser.getInterpreter().setPredictionMode(PredictionMode.SLL);
+//		
+//		final ArrayList<ParseMessage> parseMessages = new ArrayList<ParseMessage>();
+//		
+//		parser.addErrorListener(new BaseErrorListener() {
+//			@Override
+//			public void syntaxError(@NotNull Recognizer<?, ?> recognizer,
+//					@Nullable Object offendingSymbol, int line,
+//					int charPositionInLine, @NotNull String msg,
+//					@Nullable RecognitionException e) {
+//				parseMessages.add(new ParseMessage(new ResourceLocation(resource.getName(), line, charPositionInLine), msg));
+//			}
+//		});
+//		
+//		ProgramContext programCtx = null;
+//		
+//		try {
+//			programCtx = parser.program();  // STAGE 1
+//		}
+//		catch (Exception ex) {
+//			lexer.reset(); // rewind input stream
+//		    parser.reset();
+//		    parser.getInterpreter().setPredictionMode(PredictionMode.LL);
+//		    programCtx = parser.program();  // STAGE 2
+//		    // if we parse ok, it's LL not SLL
+//		}
+//
+//		Symbol module = toSymbol(resource.getPath(), resource.getPath(), resource.getName(), programCtx.programElements());
+//		
+//		return module;
+//	}
+//	
+//	private static Symbol toSymbol(String ressourcePath, String path, String name, ProgramElementsContext programElementsCtxs) {
+//		ArrayList<Symbol> modifiersBuilder = new ArrayList<Symbol>();
+//		ArrayList<Symbol> innerModulesBuilder = new ArrayList<Symbol>();
+//		ArrayList<ParserRuleContext> expressionsCtxs = new ArrayList<ParserRuleContext>();
+//		
+//		for(ModuleContext moduleCtx: programElementsCtxs.module()) {
+//			for(TerminalNode modifier: moduleCtx.moduleModifiers().ID())
+//				modifiersBuilder.add(Symbol.getIdentifier(modifier.getText()));
+//			Symbol innerModule = toSymbol(ressourcePath, path + name + "/", moduleCtx.selector.getText(), moduleCtx.programElements());
+//			innerModulesBuilder.add(innerModule);
+//		}
+//		
+//		for(ExpressionsContext expressionsCtx: programElementsCtxs.expressions()) {
+//			expressionsCtxs.add(expressionsCtx);
+//		}
+//		
+//		ParseContext parseContext = new ParseContext();
+//		Symbol body = toSymbol(parseContext, ressourcePath, expressionsCtxs);
+//		
+//		return new Symbol.Map()
+//			.with(Symbol.Map.KEY_TYPE, Symbol.getIdentifier("module"))
+//			.with(Symbol.Map.KEY_MODIFIERS, new Container.Default(modifiersBuilder))
+//			.with(Symbol.Map.KEY_INNER_MODULES, new Container.Default(innerModulesBuilder))
+//			.with(Symbol.Map.KEY_BODY, body);
+//	}
 	
-	private static Symbol toSymbol(String ressourcePath, String path, String name, ProgramElementsContext programElementsCtxs) {
-		ArrayList<Symbol> modifiersBuilder = new ArrayList<Symbol>();
-		ArrayList<Symbol> innerModulesBuilder = new ArrayList<Symbol>();
-		ArrayList<ParserRuleContext> expressionsCtxs = new ArrayList<ParserRuleContext>();
-		
-		for(ModuleContext moduleCtx: programElementsCtxs.module()) {
-			for(TerminalNode modifier: moduleCtx.moduleModifiers().ID())
-				modifiersBuilder.add(Symbol.getIdentifier(modifier.getText()));
-			Symbol innerModule = toSymbol(ressourcePath, path + name + "/", moduleCtx.selector.getText(), moduleCtx.programElements());
-			innerModulesBuilder.add(innerModule);
-		}
-		
-		for(ExpressionsContext expressionsCtx: programElementsCtxs.expressions()) {
-			expressionsCtxs.add(expressionsCtx);
-		}
-		
-		ParseContext parseContext = new ParseContext();
-		Symbol body = toSymbol(parseContext, ressourcePath, expressionsCtxs);
-		
-		return new Symbol.Map()
-			.with(Symbol.Map.KEY_TYPE, Symbol.getIdentifier("module"))
-			.with(Symbol.Map.KEY_MODIFIERS, new Container.Default(modifiersBuilder))
-			.with(Symbol.Map.KEY_INNER_MODULES, new Container.Default(innerModulesBuilder))
-			.with(Symbol.Map.KEY_BODY, body);
-	}
-	
-	public static Symbol toSymbol(ParseContext parseContext, String resourceName, ParserRuleContext ctx) {
+	public static Func0<Symbol> toSymbol(ParseContext parseContext, String resourceName, ParserRuleContext ctx) {
 		switch(ctx.getRuleIndex()) {
 		case giki.antlr4.GikiParser.RULE_expressions: {
 			ExpressionsContext expressionsCxt = (ExpressionsContext)ctx;
@@ -354,8 +371,8 @@ public class Parser {
 			if(variableDeclarationCxt.isDeclaration == null) {
 				return toSymbol(parseContext, resourceName, (ParserRuleContext)variableDeclarationCxt.getChild(0));
 			} else {
-				String identifier = variableDeclarationCxt.ID().getText();
-				Symbol initialization;
+				final String identifier = variableDeclarationCxt.ID().getText();
+				final Func0<Symbol> initializationInterpolater;
 				
 				parseContext.declareVariable(
 					new ResourceLocation(resourceName, variableDeclarationCxt.ID().getSymbol()), 
@@ -363,13 +380,23 @@ public class Parser {
 				);
 				
 				if(variableDeclarationCxt.hasInitialization != null) {
-					initialization = toSymbol(parseContext, resourceName, variableDeclarationCxt.value);
-					parseContext.assignVariable(new ResourceLocation(resourceName, variableDeclarationCxt), identifier, initialization);
+					initializationInterpolater = toSymbol(parseContext, resourceName, variableDeclarationCxt.value);
+					parseContext.assignVariable(new ResourceLocation(resourceName, variableDeclarationCxt), identifier, initializationInterpolater);
 				}
 				else
-					initialization = null;
+					initializationInterpolater = null;
 
-				return Symbol.astVariableDeclaration(identifier, initialization);
+				return new Func0<Symbol>() {
+					
+					@Override
+					public Symbol call() {
+						Symbol initialization = initializationInterpolater.call();
+						// TODO Auto-generated method stub
+						return Symbol.astVariableDeclaration(identifier, initialization);
+					}
+				};
+				
+//				return Symbol.astVariableDeclaration(identifier, initializationInterpolater);
 			}
 		}
 		case giki.antlr4.GikiParser.RULE_assignment: {
@@ -379,13 +406,21 @@ public class Parser {
 			if(assignmentCtx.isAssignment == null) {
 				return toSymbol(parseContext, resourceName, (ParserRuleContext)assignmentCtx.getChild(0));
 			} else {
-				String identifier = assignmentCtx.id.getText();
+				final String identifier = assignmentCtx.id.getText();
 				
-				Symbol value = toSymbol(parseContext, resourceName, assignmentCtx.value);
+				final Func0<Symbol> valueInterpolater = toSymbol(parseContext, resourceName, assignmentCtx.value);
 				
-				parseContext.assignVariable(new ResourceLocation(resourceName, assignmentCtx), identifier, value);
+				parseContext.assignVariable(new ResourceLocation(resourceName, assignmentCtx), identifier, valueInterpolater);
 				
-				return Symbol.astAssignment(identifier, value);
+				return new Func0<Symbol>() {
+					
+					@Override
+					public Symbol call() {
+						Symbol value = valueInterpolater.call();
+
+						return Symbol.astAssignment(identifier, value);
+					}
+				};
 			}
 		}
 		case giki.antlr4.GikiParser.RULE_decision: {
@@ -394,17 +429,29 @@ public class Parser {
 			if(decisionContext.decisionTail().pipeline() == null || decisionContext.decisionTail().pipeline().isEmpty())
 				return toSymbol(parseContext, resourceName, (ParserRuleContext)decisionContext.getChild(0));
 			else {
-				ArrayList<Symbol> alternatives = new ArrayList<Symbol>();
-				Symbol firstAlternative = toSymbol(parseContext, resourceName, decisionContext.value);
+				final ArrayList<Func0<Symbol>> alternativeInterpolaters = new ArrayList<Func0<Symbol>>();
+				Func0<Symbol> firstAlternativeInterpolater = toSymbol(parseContext, resourceName, decisionContext.value);
 				
-				alternatives.add(firstAlternative);
+				alternativeInterpolaters.add(firstAlternativeInterpolater);
 				
 				for(PipelineContext alternativeCtx: decisionContext.decisionTail().pipeline()) {
-					Symbol alternative = toSymbol(parseContext, resourceName, alternativeCtx);
-					alternatives.add(alternative);
+					Func0<Symbol> alternativeInterpolater = toSymbol(parseContext, resourceName, alternativeCtx);
+					alternativeInterpolaters.add(alternativeInterpolater);
 				}
 				
-				return Symbol.astDecision(alternatives);
+				return new Func0<Symbol>() {
+					@Override
+					public Symbol call() {
+						ArrayList<Symbol> alternatives = new ArrayList<Symbol>();
+						
+						for(Func0<Symbol> alternativeInterpolater: alternativeInterpolaters) {
+							Symbol alternative = alternativeInterpolater.call();
+							alternatives.add(alternative);
+						}
+
+						return Symbol.astDecision(alternatives);
+					}
+				};
 			}
 		}
 		case giki.antlr4.GikiParser.RULE_pipeline: {
@@ -415,37 +462,64 @@ public class Parser {
 			else {
 				Symbol codeBuilder;
 				
-				ArrayList<Symbol> pipes = new ArrayList<Symbol>();
+				final ArrayList<Func0<Symbol>> pipeInterpolaters = new ArrayList<Func0<Symbol>>();
 
-				Symbol from = null;
-				Symbol to = null;
-				Symbol firstPipe = toSymbol(parseContext, resourceName, pipelineContext.lhs);
+				final Func0<Symbol> fromInterpolater;
+				final Func0<Symbol> toInterpolater;
+				Func0<Symbol> firstPipeInterpolater = toSymbol(parseContext, resourceName, pipelineContext.lhs);
 				
 				if(pipelineContext.hasFrom != null) {
-					from = firstPipe;
-					firstPipe = toSymbol(parseContext, resourceName, pipelineContext.hasFrom.body);
+					fromInterpolater = firstPipeInterpolater;
+					firstPipeInterpolater = toSymbol(parseContext, resourceName, pipelineContext.hasFrom.body);
+				} else {
+					fromInterpolater = null;
 				}
 				
 				if(pipelineContext.hasTo != null) {
-					to = toSymbol(parseContext, resourceName, pipelineContext.hasTo.body);
+					toInterpolater = toSymbol(parseContext, resourceName, pipelineContext.hasTo.body);
+				} else {
+					toInterpolater = null;
 				}
 				
-				pipes.add(firstPipe);
+				pipeInterpolaters.add(firstPipeInterpolater);
 				
 				for(PipelineInterContext interCtx: pipelineContext.pipelineInter()) {
-					Symbol pipe = toSymbol(parseContext, resourceName, interCtx.preFixOperation());
-					pipes.add(pipe);
+					Func0<Symbol> pipeInterpolater = toSymbol(parseContext, resourceName, interCtx.preFixOperation());
+					pipeInterpolaters.add(pipeInterpolater);
 				}
 				
-				codeBuilder = Symbol.astPipeline(pipes);
+				return new Func0<Symbol>() {
+					
+					@Override
+					public Symbol call() {
+						final ArrayList<Symbol> pipes = new ArrayList<Symbol>();
+						
+						for(Func0<Symbol> pipeInterpolater: pipeInterpolaters) {
+							Symbol pipe = pipeInterpolater.call();
+							pipes.add(pipe);
+						}
+						
+						Symbol codeBuilder = Symbol.astPipeline(pipes);
+						
+						if(toInterpolater != null)
+							codeBuilder = Symbol.astTo(toInterpolater.call(), codeBuilder);
+						
+						if(fromInterpolater != null)
+							codeBuilder = Symbol.astFrom(fromInterpolater.call(), codeBuilder);
+						
+						return Symbol.astIOScope(codeBuilder);
+					}
+				};
 				
-				if(to != null)
-					codeBuilder = Symbol.astTo(to, codeBuilder);
-				
-				if(from != null)
-					codeBuilder = Symbol.astFrom(from, codeBuilder);
-				
-				return Symbol.astIOScope(codeBuilder);
+//				codeBuilder = Symbol.astPipeline(pipes);
+//				
+//				if(to != null)
+//					codeBuilder = Symbol.astTo(to, codeBuilder);
+//				
+//				if(from != null)
+//					codeBuilder = Symbol.astFrom(from, codeBuilder);
+//				
+//				return Symbol.astIOScope(codeBuilder);
 			}
 		}
 		case giki.antlr4.GikiParser.RULE_preFixOperation: {
@@ -453,19 +527,34 @@ public class Parser {
 		}
 		case giki.antlr4.GikiParser.RULE_preFixRest: {
 			PreFixRestContext preFixRestContext = (PreFixRestContext)ctx;
-			Symbol toRepeatNode = toSymbol(parseContext, resourceName, preFixRestContext.expr);
+			final Func0<Symbol> toRepeatNodeInterpolater = toSymbol(parseContext, resourceName, preFixRestContext.expr);
 			
-			return Symbol.astLoop(Symbol.astSequence(
-				Symbol.astNot(Symbol.astInstruction(Instruction.TYPE_EOF)),
-				toRepeatNode
-			));
+			return new Func0<Symbol>() {
+				
+				@Override
+				public Symbol call() {
+					Symbol toRepeatNode = toRepeatNodeInterpolater.call();
+					
+					return Symbol.astLoop(Symbol.astSequence(
+						Symbol.astNot(Symbol.astInstruction(Instruction.TYPE_EOF)),
+						toRepeatNode
+					));
+				}
+			};
 		}
 		case giki.antlr4.GikiParser.RULE_preFixFile: {
 			PreFixFileContext preFixFileCtx = (PreFixFileContext)ctx;
 			
-			Symbol expr = toSymbol(parseContext, resourceName, preFixFileCtx.expr);
+			final Func0<Symbol> exprInterpolater = toSymbol(parseContext, resourceName, preFixFileCtx.expr);
 			
-			return Symbol.astPipeline(expr, Symbol.astInstruction(Instruction.TYPE_FILE));
+			return new Func0<Symbol>() {
+				@Override
+				public Symbol call() {
+					Symbol expr = exprInterpolater.call();
+					
+					return Symbol.astPipeline(expr, Symbol.astInstruction(Instruction.TYPE_FILE));
+				}
+			};
 		}
 		case giki.antlr4.GikiParser.RULE_compose: {
 			ComposeContext composeCtx = (ComposeContext)ctx;
@@ -473,26 +562,40 @@ public class Parser {
 			if(composeCtx.isCompose == null)
 				return toSymbol(parseContext, resourceName, (ParserRuleContext)composeCtx.lhs);
 			else {
-				ArrayList<Symbol> items = new ArrayList<Symbol>();
+				final ArrayList<Func0<Symbol>> mapInterpolaters = new ArrayList<Func0<Symbol>>();
 				
-				Symbol firstMap = toSymbol(parseContext, resourceName, (ParserRuleContext)composeCtx.lhs);
-				items.add(firstMap);
+				Func0<Symbol> firstMapInterpolater = toSymbol(parseContext, resourceName, (ParserRuleContext)composeCtx.lhs);
+				mapInterpolaters.add(firstMapInterpolater);
 				
 				for(TermsContext termsCtx: composeCtx.terms().subList(1, composeCtx.terms().size())) {
-					Symbol map = toSymbol(parseContext, resourceName, termsCtx);
-					items.add(map);
+					Func0<Symbol> mapInterpolater = toSymbol(parseContext, resourceName, termsCtx);
+					mapInterpolaters.add(mapInterpolater);
 				}
 				
-				return Symbol.astReduce(items, Symbol.astInstruction(Instruction.TYPE_MAP_UNION));
+				return new Func0<Symbol>() {
+					@Override
+					public Symbol call() {
+						ArrayList<Symbol> maps = new ArrayList<Symbol>();
+						
+						for(Func0<Symbol> mapInterpolater: mapInterpolaters) {
+							Symbol map = mapInterpolater.call();
+							maps.add(map);
+						}
+
+						return Symbol.astReduce(maps, Symbol.astInstruction(Instruction.TYPE_MAP_UNION));
+					}
+				};
 			}
 		}
 		case giki.antlr4.GikiParser.RULE_interval: {
 			IntervalContext intervalCtx = (IntervalContext)ctx;
 			
+			// TODO: Support code interpolation
 			Symbol lhsIdentifier = Symbol.getIdentifier(intervalCtx.lhs.PRODUCTION_STRING().getText());
 			Symbol rhsIdentifier = Symbol.getIdentifier(intervalCtx.rhs.PRODUCTION_STRING().getText());
 			
-			return Symbol.astInterval(lhsIdentifier, rhsIdentifier);
+			//return Symbol.astInterval(lhsIdentifier, rhsIdentifier);
+			return Func0.Constant.wrap(Symbol.astInterval(lhsIdentifier, rhsIdentifier));
 		}
 		case giki.antlr4.GikiParser.RULE_terms: {
 			TermsContext termsCtx = (TermsContext)ctx;
@@ -501,60 +604,89 @@ public class Parser {
 		case giki.antlr4.GikiParser.RULE_term: {
 			TermContext termCtx = (TermContext)ctx;
 			
-			Symbol body = toSymbol(parseContext, resourceName, (ParserRuleContext)termCtx.termValue().getChild(0));
+			final Func0<Symbol> bodyInterpolater = toSymbol(parseContext, resourceName, (ParserRuleContext)termCtx.termValue().getChild(0));
+			final ArrayList<Symbol> slotIdentifiers;
+			final boolean isNot = termCtx.isNot != null;
+			final boolean isMulti = termCtx.isMulti != null;
 	
 			if(termCtx.lookupChain() != null) {
-				ArrayList<Symbol> slotIdentifiers = new ArrayList<Symbol>();
+				// TODO: Support code interpolation
+				slotIdentifiers = new ArrayList<Symbol>();
 				
 				for(TerminalNode identifierNode: termCtx.lookupChain().ID()) {
 					String slotIdentifier = identifierNode.getText();
 					slotIdentifiers.add(Symbol.getIdentifier(slotIdentifier));
 				}
 				
-				body = Symbol.astLookupChain(body, slotIdentifiers);
+//				body = Symbol.astLookupChain(body, slotIdentifiers);
+			} else {
+				slotIdentifiers = new ArrayList<Symbol>();
 			}
 			
-			if(termCtx.isNot != null)
-				body = Symbol.astNot(body);
+			return new Func0<Symbol>() {
+				@Override
+				public Symbol call() {
+					Symbol body = bodyInterpolater.call();
+					if(slotIdentifiers != null)
+						body = Symbol.astLookupChain(body, slotIdentifiers);
+					if(isNot)
+						body = Symbol.astNot(body);
+					if(isMulti)
+						Symbol.astLoop(body);
+					return body;
+				}
+			};
 			
-			if(termCtx.isMulti == null)
-				return body;
-			else
-				return Symbol.astLoop(body);
+//			if(termCtx.isNot != null)
+//				body = Symbol.astNot(body);
+//			
+//			if(termCtx.isMulti == null)
+//				return body;
+//			else
+//				return Symbol.astLoop(body);
 		}
 		case giki.antlr4.GikiParser.RULE_ioOperation: {
 			IoOperationContext ioOperationCtx = (IoOperationContext)ctx;
 			
-			Symbol expr = toSymbol(parseContext, resourceName, (ParserRuleContext)ioOperationCtx.getChild(0));
+			final Func0<Symbol> exprInterpolator = toSymbol(parseContext, resourceName, (ParserRuleContext)ioOperationCtx.getChild(0));
 			
 			if(ioOperationCtx.IO_SCOPE() != null) {
-				int ioScope = Integer.parseInt(ioOperationCtx.IO_SCOPE().getText());
-				return Symbol.astIOScopeUsage(ioScope, expr);
+				final int ioScope = Integer.parseInt(ioOperationCtx.IO_SCOPE().getText());
+				
+				return new Func0<Symbol>() {
+					@Override
+					public Symbol call() {
+						Symbol expr = exprInterpolator.call();
+						
+						return Symbol.astIOScopeUsage(ioScope, expr);
+					}
+				};
+//				return Symbol.astIOScopeUsage(ioScope, expr);
 			} else {
-				return expr;
+				return exprInterpolator;
 			}
 		}
 		case giki.antlr4.GikiParser.RULE_consumeString: {
 			String identifierText = replaceEscChars(ctx.getText());
 			Symbol identifier = Symbol.getIdentifier(identifierText);
-			return Symbol.astInstruction(Instruction.TYPE_PEEK_EQUALS_CONSUME, identifier);
+			return Func0.Constant.<Symbol>wrap(Symbol.astInstruction(Instruction.TYPE_PEEK_EQUALS_CONSUME, identifier));
 		}
 		case giki.antlr4.GikiParser.RULE_produceString: {
 			String identifierText = replaceEscChars(ctx.getText());
 			Symbol identifier = Symbol.getIdentifier(identifierText);
-			return Symbol.astInstruction(Instruction.TYPE_QUOTE, identifier);
+			return Func0.Constant.<Symbol>wrap(Symbol.astInstruction(Instruction.TYPE_QUOTE, identifier));
 		}
 		case giki.antlr4.GikiParser.RULE_consumeInteger: {
 			String integerText = ctx.getText();
 			int integerValue = Integer.parseInt(integerText);
 			Symbol integer = Symbol.getInteger(integerValue);
-			return Symbol.astInstruction(Instruction.TYPE_PEEK_EQUALS_CONSUME, integer);
+			return Func0.Constant.<Symbol>wrap(Symbol.astInstruction(Instruction.TYPE_PEEK_EQUALS_CONSUME, integer));
 		}
 		case giki.antlr4.GikiParser.RULE_produceInteger: {
 			String integerText = ctx.getText();
 			int integerValue = Integer.parseInt(integerText);
 			Symbol integer = Symbol.getInteger(integerValue);
-			return Symbol.astInstruction(Instruction.TYPE_QUOTE, integer);
+			return Func0.Constant.<Symbol>wrap(Symbol.astInstruction(Instruction.TYPE_QUOTE, integer));
 		}
 		case giki.antlr4.GikiParser.RULE_namedPrimitive: {
 			NamedPrimitiveContext namedPrimitiveCtx = (NamedPrimitiveContext)ctx;
@@ -562,30 +694,48 @@ public class Parser {
 			
 			switch(namedPrimitiveToken.getSymbol().getType()) {
 			case giki.antlr4.GikiLexer.NAMED_PRIMITIVE_EOF:
-				return Symbol.astInstruction(Instruction.TYPE_EOF);
+				return Func0.Constant.<Symbol>wrap(Symbol.astInstruction(Instruction.TYPE_EOF));
 			}
 			
 			break;
 		}
 		case giki.antlr4.GikiParser.RULE_move: {
-			return Symbol.astInstruction(Instruction.TYPE_MOVE);
+			return Func0.Constant.<Symbol>wrap(Symbol.astInstruction(Instruction.TYPE_MOVE));
 		}
 		case giki.antlr4.GikiParser.RULE_peek: {
-			return Symbol.astInstruction(Instruction.TYPE_PEEK);
+			return Func0.Constant.<Symbol>wrap(Symbol.astInstruction(Instruction.TYPE_PEEK));
 		}
 		case giki.antlr4.GikiParser.RULE_next: {
-			return Symbol.astInstruction(Instruction.TYPE_CONSUME);
+			return Func0.Constant.<Symbol>wrap(Symbol.astInstruction(Instruction.TYPE_CONSUME));
 		}
 		case giki.antlr4.GikiParser.RULE_identifier: {
 			IdentifierContext identifierCtx = (IdentifierContext)ctx;
+			ResourceLocation location = new ResourceLocation(resourceName, identifierCtx);
 			
 			String identifier = identifierCtx.ID().get(0).getText();
 			for(int i = 1; i < identifierCtx.ID().size(); i++)
 				identifier += "/" + identifierCtx.ID().get(i).getText();
 			
-			Symbol.Map astPlaceHolder = parseContext.identifierUsage(new ResourceLocation(resourceName, identifierCtx), identifier);
+			final Func0<Symbol> identiferUsageInterpolater = parseContext.identifierUsage(location, identifier);
 			
-			return astPlaceHolder;
+			return new Func0<Symbol>() {
+				@Override
+				public Symbol call() {
+//					// Identifier usage should be coupled to meta arguments
+//					// - then it is possible to associate modules with specific kinds of usage, cache these associations, and thereby support circular dependencies.
+//					Symbol.Map astPlaceHolder = parseContext.identifierUsage(location, identifier);
+//					
+//					return astPlaceHolder;
+					
+					return identiferUsageInterpolater.call();
+				}
+			};
+			
+//			Symbol.Map astPlaceHolder = parseContext.identifierUsage(new ResourceLocation(resourceName, identifierCtx), identifier);
+//			
+////			return astPlaceHolder;
+//			
+//			return return astPlaceHolder);
 		}
 		case giki.antlr4.GikiParser.RULE_group: {
 			GroupContext groupContext = (GroupContext)ctx;
@@ -595,66 +745,146 @@ public class Parser {
 			ListContext semanticTermTransitionListContext = (ListContext)ctx;
 	
 			if(semanticTermTransitionListContext.expressions() != null) {
-				Symbol initialization = toSymbol(parseContext, resourceName, semanticTermTransitionListContext.expressions().expression());
+				final Func0<Symbol> initializationInterpolater = toSymbol(parseContext, resourceName, semanticTermTransitionListContext.expressions().expression());
 				
-				return Symbol.astList(initialization);
+				return new Func0<Symbol>() {
+					
+					@Override
+					public Symbol call() {
+						Symbol initialization = initializationInterpolater.call();
+						
+						return Symbol.astList(initialization);
+					}
+				};
+//				return Symbol.astList(initialization);
 			} else {
-				return Symbol.astList();
+				return Func0.Constant.<Symbol>wrap(Symbol.astList());
 			}
 		}
 		case giki.antlr4.GikiParser.RULE_map: {
 			MapContext mapCtx = (MapContext)ctx;
-			
-			ArrayList<Symbol> slotSets = new ArrayList<Symbol>();
+
+			final ArrayList<String> slotIdentifiers = new ArrayList<String>();
+			final ArrayList<Func0<Symbol>> slotSetInterpolaters = new ArrayList<Func0<Symbol>>();
 
 			int[] slots = new int[mapCtx.slotSet().size()];
 			
 			for(int i = 0; i < slots.length; i++) {
 				SlotSetContext slotSetCtx = mapCtx.slotSet().get(i);
 				String slotIdentifier = slotSetCtx.ID().getText();
-				Symbol slotValue = toSymbol(parseContext, resourceName, slotSetCtx.value);
+				Func0<Symbol> slotValueInterpolater = toSymbol(parseContext, resourceName, slotSetCtx.value);
 				
-				Symbol slotSet = new Symbol.Map()
-					.with(Symbol.Map.KEY_SLOT, Symbol.getIdentifier(slotIdentifier))
-					.with(Symbol.Map.KEY_VALUE, slotValue);
-				slotSets.add(slotSet);
+				slotIdentifiers.add(slotIdentifier);
+				slotSetInterpolaters.add(slotValueInterpolater);
+				
+//				Symbol slotSet = new Symbol.Map()
+//					.with(Symbol.Map.KEY_SLOT, Symbol.getIdentifier(slotIdentifier))
+//					.with(Symbol.Map.KEY_VALUE, slotValueInterpolater);
+//				slotSetInterpolaters.add(slotSet);
 			}
 			
-			return Symbol.astMap(slotSets);
+			return new Func0<Symbol>() {
+				
+				@Override
+				public Symbol call() {
+					ArrayList<Symbol> slotSets = new ArrayList<Symbol>();
+					
+					for(int i = 0; i < slotIdentifiers.size(); i++) {
+						String slotIdentifier = slotIdentifiers.get(i);
+						Func0<Symbol> slotValueInterpolater = slotSetInterpolaters.get(i);
+						Symbol slotValue = slotValueInterpolater.call();
+						
+						Symbol slotSet = new Symbol.Map()
+							.with(Symbol.Map.KEY_SLOT, Symbol.getIdentifier(slotIdentifier))
+							.with(Symbol.Map.KEY_VALUE, slotValue);
+						slotSets.add(slotSet);
+					}
+
+					return Symbol.astMap(slotSets);
+				}
+			};
+			
+//			return Symbol.astMap(slotSetInterpolaters);
 		}
 		case giki.antlr4.GikiParser.RULE_produceVerbatim: {
 			ProduceVerbatimContext produceVerbatimCtx = (ProduceVerbatimContext)ctx;
 			String text = produceVerbatimCtx.VERBATIM().getText().replaceAll("\\\\´", "\\´");
 	
-			ArrayList<Symbol> quotes = new ArrayList<Symbol>();
+			final ArrayList<Symbol> quotes = new ArrayList<Symbol>();
 			
 			for(int i = 0; i < text.length(); i++)
 				quotes.add(Symbol.astQuote("" + text.charAt(i)));
 			
-			return Symbol.astGroup(quotes);
+			return new Func0<Symbol>() {
+				
+				@Override
+				public Symbol call() {
+					return Symbol.astGroup(quotes);
+				}
+			};
+			
+//			return Symbol.astGroup(quotes);
 		}
 		case giki.antlr4.GikiParser.RULE_quote: {
 			QuoteContext quoteCtx = (QuoteContext)ctx;
 			
 			ParseContext quoteParseContext = new ParseContext();
-			Symbol toQuote = toSymbol(quoteParseContext, resourceName, (ParserRuleContext)quoteCtx.termValue().getChild(0));
+			final Func0<Symbol> toQuoteInterpolater = toSymbol(quoteParseContext, resourceName, (ParserRuleContext)quoteCtx.termValue().getChild(0));
 			
-			return Symbol.astInstruction(Instruction.TYPE_QUOTE, toQuote);
+			return new Func0<Symbol>() {
+				@Override
+				public Symbol call() {
+					Symbol toQuote = toQuoteInterpolater.call();
+					
+					return Symbol.astInstruction(Instruction.TYPE_QUOTE, toQuote);
+				}
+			};
+			
+//			return Symbol.astInstruction(Instruction.TYPE_QUOTE, toQuote);
+		}
+		case giki.antlr4.GikiParser.RULE_interpolation: {
+			InterpolationContext interpolationCtx = (InterpolationContext)ctx;
+			
+			ParseContext quoteParseContext = new ParseContext();
+			final Func0<Symbol> toInterpolateInterpolater = toSymbol(quoteParseContext, resourceName, (ParserRuleContext)interpolationCtx.termValue().getChild(0));
+			
+			return new Func0<Symbol>() {
+				@Override
+				public Symbol call() {
+					Symbol toInterpolate = toInterpolateInterpolater.call();
+					Symbol astInterpolation = Symbol.astInterpolate(toInterpolate);
+					return astInterpolation;
+				}
+			};
 		}
 		}
 		
 		return null;
 	}
 	
-	public static <T extends ParserRuleContext> Symbol toSymbol(ParseContext parseContext, String resourceName, java.util.List<T> ctxs) {
-		ArrayList<Symbol> sequence = new ArrayList<Symbol>();
+	public static <T extends ParserRuleContext> Func0<Symbol> toSymbol(ParseContext parseContext, String resourceName, java.util.List<T> ctxs) {
+		final ArrayList<Func0<Symbol>> sequence = new ArrayList<Func0<Symbol>>();
 		
 		for(T ctx: ctxs) {
-			Symbol item = toSymbol(parseContext, resourceName, ctx);
+			Func0<Symbol> item = toSymbol(parseContext, resourceName, ctx);
 			sequence.add(item);
 		}
 		
-		return Symbol.astGroup(sequence);
+		return new Func0<Symbol>() {
+			@Override
+			public Symbol call() {
+				ArrayList<Symbol> sequenceBuilder = new ArrayList<Symbol>();
+				
+				for(Func0<Symbol> itemInterpolater: sequence) {
+					Symbol item = itemInterpolater.call();
+					sequenceBuilder.add(item);
+				}
+
+				return Symbol.astGroup(sequenceBuilder);
+			}
+		};
+		
+//		Func0.Constant<Symbol>.wrap(new Symbol.astGroup(sequence));
 	}
 
 	private static String replaceEscChars(String str) {

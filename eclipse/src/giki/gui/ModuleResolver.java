@@ -80,6 +80,15 @@ public class ModuleResolver {
 			return messages;
 		}
 	}
+	
+//	private Symbol interpolate(Symbol ast) {
+//		if(ast instanceof Symbol.Map) {
+//			Symbol.Map astMap = (Symbol.Map)ast;
+//			if(astMap.get(Symbol.Map.KEY_TYPE) == Symbol.Map.AST_TYPE_INTERPOLATE) {
+//				
+//			}
+//		}
+//	}
 
 	// Use Falsifiable<ModuleExpansion>; remove message from ModuleExpansion
 	public ModuleExpansion expandModule(Module module /*, expansion arguments (asts) here?*/) throws IOException {
@@ -96,9 +105,14 @@ public class ModuleResolver {
 		}
 		
 		// Make the following projection of module:
-		// - Apply expansion arguments
+		// - Do code interpolation
+		//   - Including: apply expansion arguments
 		
-		Symbol expansion;
+		Symbol expansion = module.bodyInterpolater.call();
+		
+//		if(module.parseContext.codeInterpolations.size() > 0) {
+//			
+//		}
 		
 		if(module.modifiers.length > 0) {
 			// - Apply modifiers
@@ -123,7 +137,7 @@ public class ModuleResolver {
 			CodeBuilder.Build modificationBuild = codeBuilder.build();
 			
 			//   - Then evaluate that pipeline based on an input with a single element: the module's body ast
-			IOBuffer input = new IOBuffer(Arrays.asList(module.bodyAst));
+			IOBuffer input = new IOBuffer(Arrays.asList(expansion));
 			IOBuffer output = new IOBuffer();
 			Machine machine = new Machine(input, output, modificationBuild.code, new Symbol[modificationBuild.variableCount], modificationBuild.interCount);
 			
@@ -145,9 +159,6 @@ public class ModuleResolver {
 			//       def mod2 mod1(...)
 
 			// - Resolve derived identifier usages
-		} else {
-//			expansion = Symbol.astCall(module.bodyAst);
-			expansion = module.bodyAst;
 		}
 		
 		moduleExpansion.ast = expansion;
@@ -162,7 +173,7 @@ public class ModuleResolver {
 			for(String unresolvedIdentifierUsage: moduleNeedsResolution.parseContext.unresolvedDependency()) {
 				Module dependerModule = getModule(unresolvedIdentifierUsage);
 				if(dependerModule != null)
-					moduleNeedsResolution.parseContext.resolveDependency(unresolvedIdentifierUsage, dependerModule);
+					moduleNeedsResolution.parseContext.resolveIdentifierUsage(unresolvedIdentifierUsage, dependerModule);
 			}
 		}
 		modulesNeedResolution.clear();

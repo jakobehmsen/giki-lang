@@ -1,6 +1,6 @@
 package giki.server;
 
-import giki.parser.Func;
+import giki.parser.Func0;
 import giki.parser.ModuleApplication;
 import giki.parser.ResourceStore;
 import giki.parser.ParseMessage;
@@ -84,7 +84,7 @@ public class Response {
 	}
 	
 	private void printTime(String name, final Runnable runnable) {
-		printTime(name, new Func<Object>() {
+		printTime(name, new Func0<Object>() {
 			@Override
 			public Object call() {
 				runnable.run();
@@ -93,7 +93,7 @@ public class Response {
 		});
 	}
 	
-	private <R> R printTime(String name, Func<R> func) {
+	private <R> R printTime(String name, Func0<R> func) {
 		long start = System.nanoTime();
 		R result = func.call();
 		long end = System.nanoTime();

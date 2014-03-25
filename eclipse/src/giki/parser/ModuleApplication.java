@@ -90,7 +90,7 @@ public class ModuleApplication {
 		for(String identifier: module.parseContext.unresolvedDependency()) {
 			Module depender = getModule(identifier);
 			if(depender != null) {
-				Symbol dependerAst = depender.bodyAst;
+				Symbol dependerAst = null;//depender.bodyAst;
 				
 				// Apply modifiers
 				dependerAst = Symbol.astCall(dependerAst);
@@ -138,7 +138,7 @@ public class ModuleApplication {
 			Module module = getModule(identifier);
 			if(module != null) {
 				if(module.parseContext.getMessages().isEmpty()) {
-					HLCodeBuilder hlCodeBuilder = HLCodeBuilder.Factory.fromAST(module.bodyAst);
+					HLCodeBuilder hlCodeBuilder = HLCodeBuilder.Factory.fromAST(null/*module.bodyAst*/);
 					CodeBuilder codeBuilder = new CodeBuilder();
 					
 					Object falseJumpLabel = codeBuilder.createLabel();
