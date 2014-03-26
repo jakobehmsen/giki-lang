@@ -33,7 +33,9 @@ import giki.diagnostics.StopWatch;
 import giki.parser.HLCodeBuilder.Validation;
 import giki.runtime.CodeBuilder;
 import giki.runtime.Container;
+import giki.runtime.IOBuffer;
 import giki.runtime.Instruction;
+import giki.runtime.Machine;
 import giki.runtime.Symbol;
 import giki.runtime.SymbolTable;
 import giki.runtime.Symbol.Map;
@@ -43,6 +45,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.PrintStream;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Hashtable;
 import java.util.Map.Entry;
@@ -127,10 +130,10 @@ public class Parser {
 //			this.codeBuilder = codeBuilder;
 //		}
 		
-		public final Func0<Symbol> astInterpolater;
+		public final Func1<Symbol, ExpansionContext> astInterpolater;
 		public final ParseContext parseContext;
 		
-		public MetaModule(Func0<Symbol> astInterpolater, ParseContext parseContext) {
+		public MetaModule(Func1<Symbol, ExpansionContext> astInterpolater, ParseContext parseContext) {
 			this.astInterpolater = astInterpolater;
 			this.parseContext = parseContext;
 		}
@@ -196,18 +199,18 @@ public class Parser {
 			variables.add(identifier);
 		}
 
-		public void assignVariable(ResourceLocation location, String identifier, Func0<Symbol> valueInterpolation) {
+		public void assignVariable(ResourceLocation location, String identifier, Func1<Symbol, ExpansionContext> valueInterpolation) {
 			if(!variables.contains(identifier))
 				messages.add(new ParseMessage(location, "Assigning value to undeclared variable " + identifier + "."));
 		}
 
-		public Func0<Symbol>/*Symbol.Map*/ identifierUsage(ResourceLocation location, String identifier) {
-			Symbol.Map astPlaceHolder = (Symbol.Map)Symbol.astPlaceHolder(identifier);
+		public Func1<Symbol, ExpansionContext>/*Symbol.Map*/ identifierUsage(ResourceLocation location, final String identifier) {
+//			Symbol.Map astPlaceHolder = (Symbol.Map)Symbol.astPlaceHolder(identifier);
 			
 			if(variables.contains(identifier)) {
 				Symbol astVariableUsage = Symbol.astVariableUsage(identifier);
 				
-				return Func0.Constant.wrap(astVariableUsage);
+				return Func1.Constant.wrap(astVariableUsage);
 				
 //				astPlaceHolder.put(Symbol.Map.KEY_TYPE, Symbol.Map.AST_TYPE_VARIABLE_USAGE);
 			} else {
@@ -220,13 +223,23 @@ public class Parser {
 //				usages.add(new IdentifierUsage(location, astPlaceHolder, identifier));
 //				return astPlaceHolder;
 				
-				return new Func0<Symbol>() {
+				return new Func1<Symbol, ExpansionContext>() {
 					@Override
-					public Symbol call() {
+					public Symbol call(ExpansionContext expansionCtx) {
 //						// Identifier usage should be coupled to meta arguments
 //						// - then it is possible to associate modules with specific kinds of usage, cache these associations, and thereby support circular dependencies.
 						// TODO Auto-generated method stub
-						return null;
+						final Symbol.Map astPlaceHolder = (Symbol.Map)Symbol.astPlaceHolder(identifier);
+						
+						expansionCtx.addModuleUsage(identifier /* + meta arguments*/, new Action1<Symbol>() {
+							@Override
+							public void run(Symbol astExpansion) {
+								astPlaceHolder.put(Symbol.Map.KEY_TYPE, Symbol.Map.AST_TYPE_MODULE_USAGE);
+								astPlaceHolder.put(Symbol.Map.KEY_VALUE, astExpansion);
+							}
+						});
+						
+						return astPlaceHolder;
 					}
 				};
 			}
@@ -285,7 +298,7 @@ public class Parser {
 	
 	private static MetaModule toBuild(String resourceName, ArrayList<ParserRuleContext> ctxs) {
 		ParseContext parseContext = new ParseContext();
-		Func0<Symbol> astInterpolater = toSymbol(parseContext, resourceName, ctxs);
+		Func1<Symbol, ExpansionContext> astInterpolater = toSymbol(parseContext, resourceName, ctxs);
 		return new MetaModule(astInterpolater, parseContext);
 	}
 	
@@ -355,7 +368,7 @@ public class Parser {
 //			.with(Symbol.Map.KEY_BODY, body);
 //	}
 	
-	public static Func0<Symbol> toSymbol(ParseContext parseContext, String resourceName, ParserRuleContext ctx) {
+	public static Func1<Symbol, ExpansionContext> toSymbol(ParseContext parseContext, String resourceName, ParserRuleContext ctx) {
 		switch(ctx.getRuleIndex()) {
 		case giki.antlr4.GikiParser.RULE_expressions: {
 			ExpressionsContext expressionsCxt = (ExpressionsContext)ctx;
@@ -372,7 +385,7 @@ public class Parser {
 				return toSymbol(parseContext, resourceName, (ParserRuleContext)variableDeclarationCxt.getChild(0));
 			} else {
 				final String identifier = variableDeclarationCxt.ID().getText();
-				final Func0<Symbol> initializationInterpolater;
+				final Func1<Symbol, ExpansionContext> initializationInterpolater;
 				
 				parseContext.declareVariable(
 					new ResourceLocation(resourceName, variableDeclarationCxt.ID().getSymbol()), 
@@ -386,11 +399,10 @@ public class Parser {
 				else
 					initializationInterpolater = null;
 
-				return new Func0<Symbol>() {
-					
+				return new Func1<Symbol, ExpansionContext>() {
 					@Override
-					public Symbol call() {
-						Symbol initialization = initializationInterpolater.call();
+					public Symbol call(ExpansionContext expansionCtx) {
+						Symbol initialization = initializationInterpolater.call(expansionCtx);
 						// TODO Auto-generated method stub
 						return Symbol.astVariableDeclaration(identifier, initialization);
 					}
@@ -408,15 +420,14 @@ public class Parser {
 			} else {
 				final String identifier = assignmentCtx.id.getText();
 				
-				final Func0<Symbol> valueInterpolater = toSymbol(parseContext, resourceName, assignmentCtx.value);
+				final Func1<Symbol, ExpansionContext> valueInterpolater = toSymbol(parseContext, resourceName, assignmentCtx.value);
 				
 				parseContext.assignVariable(new ResourceLocation(resourceName, assignmentCtx), identifier, valueInterpolater);
 				
-				return new Func0<Symbol>() {
-					
+				return new Func1<Symbol, ExpansionContext>() {
 					@Override
-					public Symbol call() {
-						Symbol value = valueInterpolater.call();
+					public Symbol call(ExpansionContext expansionCtx) {
+						Symbol value = valueInterpolater.call(expansionCtx);
 
 						return Symbol.astAssignment(identifier, value);
 					}
@@ -429,23 +440,23 @@ public class Parser {
 			if(decisionContext.decisionTail().pipeline() == null || decisionContext.decisionTail().pipeline().isEmpty())
 				return toSymbol(parseContext, resourceName, (ParserRuleContext)decisionContext.getChild(0));
 			else {
-				final ArrayList<Func0<Symbol>> alternativeInterpolaters = new ArrayList<Func0<Symbol>>();
-				Func0<Symbol> firstAlternativeInterpolater = toSymbol(parseContext, resourceName, decisionContext.value);
+				final ArrayList<Func1<Symbol, ExpansionContext>> alternativeInterpolaters = new ArrayList<Func1<Symbol, ExpansionContext>>();
+				Func1<Symbol, ExpansionContext> firstAlternativeInterpolater = toSymbol(parseContext, resourceName, decisionContext.value);
 				
 				alternativeInterpolaters.add(firstAlternativeInterpolater);
 				
 				for(PipelineContext alternativeCtx: decisionContext.decisionTail().pipeline()) {
-					Func0<Symbol> alternativeInterpolater = toSymbol(parseContext, resourceName, alternativeCtx);
+					Func1<Symbol, ExpansionContext> alternativeInterpolater = toSymbol(parseContext, resourceName, alternativeCtx);
 					alternativeInterpolaters.add(alternativeInterpolater);
 				}
 				
-				return new Func0<Symbol>() {
+				return new Func1<Symbol, ExpansionContext>() {
 					@Override
-					public Symbol call() {
+					public Symbol call(ExpansionContext expansionCtx) {
 						ArrayList<Symbol> alternatives = new ArrayList<Symbol>();
 						
-						for(Func0<Symbol> alternativeInterpolater: alternativeInterpolaters) {
-							Symbol alternative = alternativeInterpolater.call();
+						for(Func1<Symbol, ExpansionContext> alternativeInterpolater: alternativeInterpolaters) {
+							Symbol alternative = alternativeInterpolater.call(expansionCtx);
 							alternatives.add(alternative);
 						}
 
@@ -462,11 +473,11 @@ public class Parser {
 			else {
 				Symbol codeBuilder;
 				
-				final ArrayList<Func0<Symbol>> pipeInterpolaters = new ArrayList<Func0<Symbol>>();
+				final ArrayList<Func1<Symbol, ExpansionContext>> pipeInterpolaters = new ArrayList<Func1<Symbol, ExpansionContext>>();
 
-				final Func0<Symbol> fromInterpolater;
-				final Func0<Symbol> toInterpolater;
-				Func0<Symbol> firstPipeInterpolater = toSymbol(parseContext, resourceName, pipelineContext.lhs);
+				final Func1<Symbol, ExpansionContext> fromInterpolater;
+				final Func1<Symbol, ExpansionContext> toInterpolater;
+				Func1<Symbol, ExpansionContext> firstPipeInterpolater = toSymbol(parseContext, resourceName, pipelineContext.lhs);
 				
 				if(pipelineContext.hasFrom != null) {
 					fromInterpolater = firstPipeInterpolater;
@@ -484,28 +495,27 @@ public class Parser {
 				pipeInterpolaters.add(firstPipeInterpolater);
 				
 				for(PipelineInterContext interCtx: pipelineContext.pipelineInter()) {
-					Func0<Symbol> pipeInterpolater = toSymbol(parseContext, resourceName, interCtx.preFixOperation());
+					Func1<Symbol, ExpansionContext> pipeInterpolater = toSymbol(parseContext, resourceName, interCtx.preFixOperation());
 					pipeInterpolaters.add(pipeInterpolater);
 				}
 				
-				return new Func0<Symbol>() {
-					
+				return new Func1<Symbol, ExpansionContext>() {
 					@Override
-					public Symbol call() {
+					public Symbol call(ExpansionContext expansionCtx) {
 						final ArrayList<Symbol> pipes = new ArrayList<Symbol>();
 						
-						for(Func0<Symbol> pipeInterpolater: pipeInterpolaters) {
-							Symbol pipe = pipeInterpolater.call();
+						for(Func1<Symbol, ExpansionContext> pipeInterpolater: pipeInterpolaters) {
+							Symbol pipe = pipeInterpolater.call(expansionCtx);
 							pipes.add(pipe);
 						}
 						
 						Symbol codeBuilder = Symbol.astPipeline(pipes);
 						
 						if(toInterpolater != null)
-							codeBuilder = Symbol.astTo(toInterpolater.call(), codeBuilder);
+							codeBuilder = Symbol.astTo(toInterpolater.call(expansionCtx), codeBuilder);
 						
 						if(fromInterpolater != null)
-							codeBuilder = Symbol.astFrom(fromInterpolater.call(), codeBuilder);
+							codeBuilder = Symbol.astFrom(fromInterpolater.call(expansionCtx), codeBuilder);
 						
 						return Symbol.astIOScope(codeBuilder);
 					}
@@ -527,13 +537,12 @@ public class Parser {
 		}
 		case giki.antlr4.GikiParser.RULE_preFixRest: {
 			PreFixRestContext preFixRestContext = (PreFixRestContext)ctx;
-			final Func0<Symbol> toRepeatNodeInterpolater = toSymbol(parseContext, resourceName, preFixRestContext.expr);
+			final Func1<Symbol, ExpansionContext> toRepeatNodeInterpolater = toSymbol(parseContext, resourceName, preFixRestContext.expr);
 			
-			return new Func0<Symbol>() {
-				
+			return new Func1<Symbol, ExpansionContext>() {
 				@Override
-				public Symbol call() {
-					Symbol toRepeatNode = toRepeatNodeInterpolater.call();
+				public Symbol call(ExpansionContext expansionCtx) {
+					Symbol toRepeatNode = toRepeatNodeInterpolater.call(expansionCtx);
 					
 					return Symbol.astLoop(Symbol.astSequence(
 						Symbol.astNot(Symbol.astInstruction(Instruction.TYPE_EOF)),
@@ -545,12 +554,12 @@ public class Parser {
 		case giki.antlr4.GikiParser.RULE_preFixFile: {
 			PreFixFileContext preFixFileCtx = (PreFixFileContext)ctx;
 			
-			final Func0<Symbol> exprInterpolater = toSymbol(parseContext, resourceName, preFixFileCtx.expr);
+			final Func1<Symbol, ExpansionContext> exprInterpolater = toSymbol(parseContext, resourceName, preFixFileCtx.expr);
 			
-			return new Func0<Symbol>() {
+			return new Func1<Symbol, ExpansionContext>() {
 				@Override
-				public Symbol call() {
-					Symbol expr = exprInterpolater.call();
+				public Symbol call(ExpansionContext expansionCtx) {
+					Symbol expr = exprInterpolater.call(expansionCtx);
 					
 					return Symbol.astPipeline(expr, Symbol.astInstruction(Instruction.TYPE_FILE));
 				}
@@ -562,23 +571,23 @@ public class Parser {
 			if(composeCtx.isCompose == null)
 				return toSymbol(parseContext, resourceName, (ParserRuleContext)composeCtx.lhs);
 			else {
-				final ArrayList<Func0<Symbol>> mapInterpolaters = new ArrayList<Func0<Symbol>>();
+				final ArrayList<Func1<Symbol, ExpansionContext>> mapInterpolaters = new ArrayList<Func1<Symbol, ExpansionContext>>();
 				
-				Func0<Symbol> firstMapInterpolater = toSymbol(parseContext, resourceName, (ParserRuleContext)composeCtx.lhs);
+				Func1<Symbol, ExpansionContext> firstMapInterpolater = toSymbol(parseContext, resourceName, (ParserRuleContext)composeCtx.lhs);
 				mapInterpolaters.add(firstMapInterpolater);
 				
 				for(TermsContext termsCtx: composeCtx.terms().subList(1, composeCtx.terms().size())) {
-					Func0<Symbol> mapInterpolater = toSymbol(parseContext, resourceName, termsCtx);
+					Func1<Symbol, ExpansionContext> mapInterpolater = toSymbol(parseContext, resourceName, termsCtx);
 					mapInterpolaters.add(mapInterpolater);
 				}
 				
-				return new Func0<Symbol>() {
+				return new Func1<Symbol, ExpansionContext>() {
 					@Override
-					public Symbol call() {
+					public Symbol call(ExpansionContext expansionCtx) {
 						ArrayList<Symbol> maps = new ArrayList<Symbol>();
 						
-						for(Func0<Symbol> mapInterpolater: mapInterpolaters) {
-							Symbol map = mapInterpolater.call();
+						for(Func1<Symbol, ExpansionContext> mapInterpolater: mapInterpolaters) {
+							Symbol map = mapInterpolater.call(expansionCtx);
 							maps.add(map);
 						}
 
@@ -595,7 +604,7 @@ public class Parser {
 			Symbol rhsIdentifier = Symbol.getIdentifier(intervalCtx.rhs.PRODUCTION_STRING().getText());
 			
 			//return Symbol.astInterval(lhsIdentifier, rhsIdentifier);
-			return Func0.Constant.wrap(Symbol.astInterval(lhsIdentifier, rhsIdentifier));
+			return Func1.Constant.wrap(Symbol.astInterval(lhsIdentifier, rhsIdentifier));
 		}
 		case giki.antlr4.GikiParser.RULE_terms: {
 			TermsContext termsCtx = (TermsContext)ctx;
@@ -604,7 +613,7 @@ public class Parser {
 		case giki.antlr4.GikiParser.RULE_term: {
 			TermContext termCtx = (TermContext)ctx;
 			
-			final Func0<Symbol> bodyInterpolater = toSymbol(parseContext, resourceName, (ParserRuleContext)termCtx.termValue().getChild(0));
+			final Func1<Symbol, ExpansionContext> bodyInterpolater = toSymbol(parseContext, resourceName, (ParserRuleContext)termCtx.termValue().getChild(0));
 			final ArrayList<Symbol> slotIdentifiers;
 			final boolean isNot = termCtx.isNot != null;
 			final boolean isMulti = termCtx.isMulti != null;
@@ -623,10 +632,10 @@ public class Parser {
 				slotIdentifiers = new ArrayList<Symbol>();
 			}
 			
-			return new Func0<Symbol>() {
+			return new Func1<Symbol, ExpansionContext>() {
 				@Override
-				public Symbol call() {
-					Symbol body = bodyInterpolater.call();
+				public Symbol call(ExpansionContext expansionCtx) {
+					Symbol body = bodyInterpolater.call(expansionCtx);
 					if(slotIdentifiers != null)
 						body = Symbol.astLookupChain(body, slotIdentifiers);
 					if(isNot)
@@ -648,15 +657,15 @@ public class Parser {
 		case giki.antlr4.GikiParser.RULE_ioOperation: {
 			IoOperationContext ioOperationCtx = (IoOperationContext)ctx;
 			
-			final Func0<Symbol> exprInterpolator = toSymbol(parseContext, resourceName, (ParserRuleContext)ioOperationCtx.getChild(0));
+			final Func1<Symbol, ExpansionContext> exprInterpolator = toSymbol(parseContext, resourceName, (ParserRuleContext)ioOperationCtx.getChild(0));
 			
 			if(ioOperationCtx.IO_SCOPE() != null) {
 				final int ioScope = Integer.parseInt(ioOperationCtx.IO_SCOPE().getText());
 				
-				return new Func0<Symbol>() {
+				return new Func1<Symbol, ExpansionContext>() {
 					@Override
-					public Symbol call() {
-						Symbol expr = exprInterpolator.call();
+					public Symbol call(ExpansionContext expansionCtx) {
+						Symbol expr = exprInterpolator.call(expansionCtx);
 						
 						return Symbol.astIOScopeUsage(ioScope, expr);
 					}
@@ -669,24 +678,24 @@ public class Parser {
 		case giki.antlr4.GikiParser.RULE_consumeString: {
 			String identifierText = replaceEscChars(ctx.getText());
 			Symbol identifier = Symbol.getIdentifier(identifierText);
-			return Func0.Constant.<Symbol>wrap(Symbol.astInstruction(Instruction.TYPE_PEEK_EQUALS_CONSUME, identifier));
+			return Func1.Constant.<Symbol, ExpansionContext>wrap(Symbol.astInstruction(Instruction.TYPE_PEEK_EQUALS_CONSUME, identifier));
 		}
 		case giki.antlr4.GikiParser.RULE_produceString: {
 			String identifierText = replaceEscChars(ctx.getText());
 			Symbol identifier = Symbol.getIdentifier(identifierText);
-			return Func0.Constant.<Symbol>wrap(Symbol.astInstruction(Instruction.TYPE_QUOTE, identifier));
+			return Func1.Constant.<Symbol, ExpansionContext>wrap(Symbol.astInstruction(Instruction.TYPE_QUOTE, identifier));
 		}
 		case giki.antlr4.GikiParser.RULE_consumeInteger: {
 			String integerText = ctx.getText();
 			int integerValue = Integer.parseInt(integerText);
 			Symbol integer = Symbol.getInteger(integerValue);
-			return Func0.Constant.<Symbol>wrap(Symbol.astInstruction(Instruction.TYPE_PEEK_EQUALS_CONSUME, integer));
+			return Func1.Constant.<Symbol, ExpansionContext>wrap(Symbol.astInstruction(Instruction.TYPE_PEEK_EQUALS_CONSUME, integer));
 		}
 		case giki.antlr4.GikiParser.RULE_produceInteger: {
 			String integerText = ctx.getText();
 			int integerValue = Integer.parseInt(integerText);
 			Symbol integer = Symbol.getInteger(integerValue);
-			return Func0.Constant.<Symbol>wrap(Symbol.astInstruction(Instruction.TYPE_QUOTE, integer));
+			return Func1.Constant.<Symbol, ExpansionContext>wrap(Symbol.astInstruction(Instruction.TYPE_QUOTE, integer));
 		}
 		case giki.antlr4.GikiParser.RULE_namedPrimitive: {
 			NamedPrimitiveContext namedPrimitiveCtx = (NamedPrimitiveContext)ctx;
@@ -694,19 +703,19 @@ public class Parser {
 			
 			switch(namedPrimitiveToken.getSymbol().getType()) {
 			case giki.antlr4.GikiLexer.NAMED_PRIMITIVE_EOF:
-				return Func0.Constant.<Symbol>wrap(Symbol.astInstruction(Instruction.TYPE_EOF));
+				return Func1.Constant.<Symbol, ExpansionContext>wrap(Symbol.astInstruction(Instruction.TYPE_EOF));
 			}
 			
 			break;
 		}
 		case giki.antlr4.GikiParser.RULE_move: {
-			return Func0.Constant.<Symbol>wrap(Symbol.astInstruction(Instruction.TYPE_MOVE));
+			return Func1.Constant.<Symbol, ExpansionContext>wrap(Symbol.astInstruction(Instruction.TYPE_MOVE));
 		}
 		case giki.antlr4.GikiParser.RULE_peek: {
-			return Func0.Constant.<Symbol>wrap(Symbol.astInstruction(Instruction.TYPE_PEEK));
+			return Func1.Constant.<Symbol, ExpansionContext>wrap(Symbol.astInstruction(Instruction.TYPE_PEEK));
 		}
 		case giki.antlr4.GikiParser.RULE_next: {
-			return Func0.Constant.<Symbol>wrap(Symbol.astInstruction(Instruction.TYPE_CONSUME));
+			return Func1.Constant.<Symbol, ExpansionContext>wrap(Symbol.astInstruction(Instruction.TYPE_CONSUME));
 		}
 		case giki.antlr4.GikiParser.RULE_identifier: {
 			IdentifierContext identifierCtx = (IdentifierContext)ctx;
@@ -716,18 +725,18 @@ public class Parser {
 			for(int i = 1; i < identifierCtx.ID().size(); i++)
 				identifier += "/" + identifierCtx.ID().get(i).getText();
 			
-			final Func0<Symbol> identiferUsageInterpolater = parseContext.identifierUsage(location, identifier);
+			final Func1<Symbol, ExpansionContext> identiferUsageInterpolater = parseContext.identifierUsage(location, identifier);
 			
-			return new Func0<Symbol>() {
+			return new Func1<Symbol, ExpansionContext>() {
 				@Override
-				public Symbol call() {
+				public Symbol call(ExpansionContext expansionCtx) {
 //					// Identifier usage should be coupled to meta arguments
 //					// - then it is possible to associate modules with specific kinds of usage, cache these associations, and thereby support circular dependencies.
 //					Symbol.Map astPlaceHolder = parseContext.identifierUsage(location, identifier);
 //					
 //					return astPlaceHolder;
 					
-					return identiferUsageInterpolater.call();
+					return identiferUsageInterpolater.call(expansionCtx);
 				}
 			};
 			
@@ -745,34 +754,33 @@ public class Parser {
 			ListContext semanticTermTransitionListContext = (ListContext)ctx;
 	
 			if(semanticTermTransitionListContext.expressions() != null) {
-				final Func0<Symbol> initializationInterpolater = toSymbol(parseContext, resourceName, semanticTermTransitionListContext.expressions().expression());
+				final Func1<Symbol, ExpansionContext> initializationInterpolater = toSymbol(parseContext, resourceName, semanticTermTransitionListContext.expressions().expression());
 				
-				return new Func0<Symbol>() {
-					
+				return new Func1<Symbol, ExpansionContext>() {
 					@Override
-					public Symbol call() {
-						Symbol initialization = initializationInterpolater.call();
+					public Symbol call(ExpansionContext expansionCtx) {
+						Symbol initialization = initializationInterpolater.call(expansionCtx);
 						
 						return Symbol.astList(initialization);
 					}
 				};
 //				return Symbol.astList(initialization);
 			} else {
-				return Func0.Constant.<Symbol>wrap(Symbol.astList());
+				return Func1.Constant.<Symbol, ExpansionContext>wrap(Symbol.astList());
 			}
 		}
 		case giki.antlr4.GikiParser.RULE_map: {
 			MapContext mapCtx = (MapContext)ctx;
 
 			final ArrayList<String> slotIdentifiers = new ArrayList<String>();
-			final ArrayList<Func0<Symbol>> slotSetInterpolaters = new ArrayList<Func0<Symbol>>();
+			final ArrayList<Func1<Symbol, ExpansionContext>> slotSetInterpolaters = new ArrayList<Func1<Symbol, ExpansionContext>>();
 
 			int[] slots = new int[mapCtx.slotSet().size()];
 			
 			for(int i = 0; i < slots.length; i++) {
 				SlotSetContext slotSetCtx = mapCtx.slotSet().get(i);
 				String slotIdentifier = slotSetCtx.ID().getText();
-				Func0<Symbol> slotValueInterpolater = toSymbol(parseContext, resourceName, slotSetCtx.value);
+				Func1<Symbol, ExpansionContext> slotValueInterpolater = toSymbol(parseContext, resourceName, slotSetCtx.value);
 				
 				slotIdentifiers.add(slotIdentifier);
 				slotSetInterpolaters.add(slotValueInterpolater);
@@ -783,16 +791,15 @@ public class Parser {
 //				slotSetInterpolaters.add(slotSet);
 			}
 			
-			return new Func0<Symbol>() {
-				
+			return new Func1<Symbol, ExpansionContext>() {
 				@Override
-				public Symbol call() {
+				public Symbol call(ExpansionContext expansionCtx) {
 					ArrayList<Symbol> slotSets = new ArrayList<Symbol>();
 					
 					for(int i = 0; i < slotIdentifiers.size(); i++) {
 						String slotIdentifier = slotIdentifiers.get(i);
-						Func0<Symbol> slotValueInterpolater = slotSetInterpolaters.get(i);
-						Symbol slotValue = slotValueInterpolater.call();
+						Func1<Symbol, ExpansionContext> slotValueInterpolater = slotSetInterpolaters.get(i);
+						Symbol slotValue = slotValueInterpolater.call(expansionCtx);
 						
 						Symbol slotSet = new Symbol.Map()
 							.with(Symbol.Map.KEY_SLOT, Symbol.getIdentifier(slotIdentifier))
@@ -815,10 +822,9 @@ public class Parser {
 			for(int i = 0; i < text.length(); i++)
 				quotes.add(Symbol.astQuote("" + text.charAt(i)));
 			
-			return new Func0<Symbol>() {
-				
+			return new Func1<Symbol, ExpansionContext>() {
 				@Override
-				public Symbol call() {
+				public Symbol call(ExpansionContext expansionCtx) {
 					return Symbol.astGroup(quotes);
 				}
 			};
@@ -829,12 +835,12 @@ public class Parser {
 			QuoteContext quoteCtx = (QuoteContext)ctx;
 			
 			ParseContext quoteParseContext = new ParseContext();
-			final Func0<Symbol> toQuoteInterpolater = toSymbol(quoteParseContext, resourceName, (ParserRuleContext)quoteCtx.termValue().getChild(0));
+			final Func1<Symbol, ExpansionContext> toQuoteInterpolater = toSymbol(quoteParseContext, resourceName, (ParserRuleContext)quoteCtx.termValue().getChild(0));
 			
-			return new Func0<Symbol>() {
+			return new Func1<Symbol, ExpansionContext>() {
 				@Override
-				public Symbol call() {
-					Symbol toQuote = toQuoteInterpolater.call();
+				public Symbol call(ExpansionContext expansionCtx) {
+					Symbol toQuote = toQuoteInterpolater.call(expansionCtx);
 					
 					return Symbol.astInstruction(Instruction.TYPE_QUOTE, toQuote);
 				}
@@ -846,13 +852,33 @@ public class Parser {
 			InterpolationContext interpolationCtx = (InterpolationContext)ctx;
 			
 			ParseContext quoteParseContext = new ParseContext();
-			final Func0<Symbol> toInterpolateInterpolater = toSymbol(quoteParseContext, resourceName, (ParserRuleContext)interpolationCtx.termValue().getChild(0));
+			final Func1<Symbol, ExpansionContext> toInterpolateInterpolater = toSymbol(quoteParseContext, resourceName, (ParserRuleContext)interpolationCtx.termValue().getChild(0));
 			
-			return new Func0<Symbol>() {
+			return new Func1<Symbol, ExpansionContext>() {
 				@Override
-				public Symbol call() {
-					Symbol toInterpolate = toInterpolateInterpolater.call();
-					Symbol astInterpolation = Symbol.astInterpolate(toInterpolate);
+				public Symbol call(ExpansionContext expansionCtx) {
+					Symbol toInterpolate = toInterpolateInterpolater.call(expansionCtx);
+//					Symbol astInterpolation = Symbol.astInterpolate(toInterpolate);
+					
+					HLCodeBuilder modification = new HLEntryPointBuilder(HLCodeBuilder.Factory.fromAST(toInterpolate));
+					CodeBuilder codeBuilder = new CodeBuilder();
+					modification.appendTo(codeBuilder);
+					CodeBuilder.Build modificationBuild = codeBuilder.build();
+					
+					//   - Then evaluate that pipeline based on an input with a single element: the module's body ast
+					IOBuffer input = new IOBuffer(/* What to use as input? Meta arguments here? */);
+					IOBuffer output = new IOBuffer();
+					Machine machine = new Machine(input, output, modificationBuild.code, new Symbol[modificationBuild.variableCount], modificationBuild.interCount);
+					
+					while(machine.getResult() == Machine.RESULT_ABSENT)
+						machine.evaluate();
+
+					//   - The output (a single element is expected) is then considered the expanded module's body ast
+					//   - If the output is not as expected, then an error, about this, is promoted
+					output.pipe();
+					
+					Symbol astInterpolation = output.peek();
+					
 					return astInterpolation;
 				}
 			};
@@ -862,21 +888,21 @@ public class Parser {
 		return null;
 	}
 	
-	public static <T extends ParserRuleContext> Func0<Symbol> toSymbol(ParseContext parseContext, String resourceName, java.util.List<T> ctxs) {
-		final ArrayList<Func0<Symbol>> sequence = new ArrayList<Func0<Symbol>>();
+	public static <T extends ParserRuleContext> Func1<Symbol, ExpansionContext> toSymbol(ParseContext parseContext, String resourceName, java.util.List<T> ctxs) {
+		final ArrayList<Func1<Symbol, ExpansionContext>> sequence = new ArrayList<Func1<Symbol, ExpansionContext>>();
 		
 		for(T ctx: ctxs) {
-			Func0<Symbol> item = toSymbol(parseContext, resourceName, ctx);
+			Func1<Symbol, ExpansionContext> item = toSymbol(parseContext, resourceName, ctx);
 			sequence.add(item);
 		}
 		
-		return new Func0<Symbol>() {
+		return new Func1<Symbol, ExpansionContext>() {
 			@Override
-			public Symbol call() {
+			public Symbol call(ExpansionContext expansionCtx) {
 				ArrayList<Symbol> sequenceBuilder = new ArrayList<Symbol>();
 				
-				for(Func0<Symbol> itemInterpolater: sequence) {
-					Symbol item = itemInterpolater.call();
+				for(Func1<Symbol, ExpansionContext> itemInterpolater: sequence) {
+					Symbol item = itemInterpolater.call(expansionCtx);
 					sequenceBuilder.add(item);
 				}
 

@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Hashtable;
 
+import giki.parser.ExpansionContext;
 import giki.parser.HLCodeBuilder;
 import giki.parser.HLEntryPointBuilder;
 import giki.parser.HLPipeline;
@@ -66,13 +67,12 @@ public class ModuleResolver {
 	public static class ModuleExpansion {
 		public Module module;
 		public Symbol ast;
-		public Parser.ParseContext parseContext = new ParseContext();
 		public ArrayList<Module.Modifier> missingModifiers = new ArrayList<Module.Modifier>();
 		
 		public ArrayList<ParseMessage> getMessages() {
 			ArrayList<ParseMessage> messages = new ArrayList<ParseMessage>();
 			
-			messages.addAll(parseContext.getMessages());
+			messages.addAll(module.parseContext.getMessages());
 			
 			for(Module.Modifier missingModifier: missingModifiers)
 				messages.add(new ParseMessage(missingModifier.location, "Undefined modifier " + missingModifier.identifier));
@@ -91,24 +91,24 @@ public class ModuleResolver {
 //	}
 
 	// Use Falsifiable<ModuleExpansion>; remove message from ModuleExpansion
-	public ModuleExpansion expandModule(Module module /*, expansion arguments (asts) here?*/) throws IOException {
+	public ModuleExpansion expandModule(ExpansionContext expansionContext, Module module /*, expansion arguments (asts) here?*/) throws IOException {
 		ModuleExpansion moduleExpansion = new ModuleExpansion();
 		
 		moduleExpansion.module = module;
 		
-		for(Module dependerModule: module.parseContext.getDependers()) {
-			for(Parser.IdentifierUsage usage: module.parseContext.getResolvedDependencies(dependerModule)) {
-				ModuleExpansion dependerExpansion = expandModule(dependerModule);
-				usage.astPlaceHolder.put(Symbol.Map.KEY_TYPE, Symbol.Map.AST_TYPE_MODULE_USAGE);
-				usage.astPlaceHolder.put(Symbol.Map.KEY_VALUE, dependerExpansion.ast);
-			}
-		}
+//		for(Module dependerModule: module.parseContext.getDependers()) {
+//			for(Parser.IdentifierUsage usage: module.parseContext.getResolvedDependencies(dependerModule)) {
+//				ModuleExpansion dependerExpansion = expandModule(expansionContext, dependerModule);
+//				usage.astPlaceHolder.put(Symbol.Map.KEY_TYPE, Symbol.Map.AST_TYPE_MODULE_USAGE);
+//				usage.astPlaceHolder.put(Symbol.Map.KEY_VALUE, dependerExpansion.ast);
+//			}
+//		}
 		
 		// Make the following projection of module:
 		// - Do code interpolation
 		//   - Including: apply expansion arguments
 		
-		Symbol expansion = module.bodyInterpolater.call();
+		Symbol expansion = module.bodyInterpolater.call(expansionContext);
 		
 //		if(module.parseContext.codeInterpolations.size() > 0) {
 //			
@@ -124,7 +124,7 @@ public class ModuleResolver {
 			for(Module.Modifier modifier: module.modifiers) {
 				Module modifierModule = getModule(modifier.identifier);
 				if(modifierModule != null) {
-					Symbol modifierModuleExpansion = expandModule(modifierModule).ast;
+					Symbol modifierModuleExpansion = expandModule(expansionContext, modifierModule).ast;
 					HLCodeBuilder modifierModuleExpansionBuilder = HLCodeBuilder.Factory.fromAST(modifierModuleExpansion);
 					pipeline.append(modifierModuleExpansionBuilder);
 				} else
@@ -168,18 +168,19 @@ public class ModuleResolver {
 	
 	// Use Falsifiable<CodeBuilder.Build>
 	public CodeBuilder.Build build(String entryPointIdentifier) throws IOException {
-		// - Resolve generic identifier usages
-		for(Module moduleNeedsResolution: modulesNeedResolution) {
-			for(String unresolvedIdentifierUsage: moduleNeedsResolution.parseContext.unresolvedDependency()) {
-				Module dependerModule = getModule(unresolvedIdentifierUsage);
-				if(dependerModule != null)
-					moduleNeedsResolution.parseContext.resolveIdentifierUsage(unresolvedIdentifierUsage, dependerModule);
-			}
-		}
-		modulesNeedResolution.clear();
+//		// - Resolve generic identifier usages
+//		for(Module moduleNeedsResolution: modulesNeedResolution) {
+//			for(String unresolvedIdentifierUsage: moduleNeedsResolution.parseContext.unresolvedDependency()) {
+//				Module dependerModule = getModule(unresolvedIdentifierUsage);
+//				if(dependerModule != null)
+//					moduleNeedsResolution.parseContext.resolveIdentifierUsage(unresolvedIdentifierUsage, dependerModule);
+//			}
+//		}
+//		modulesNeedResolution.clear();
 		
 		Module entryPointModule = getModule(entryPointIdentifier);
-		ModuleExpansion entryPointExpansion = expandModule(entryPointModule);
+		ExpansionContext expansionCtx = new ExpansionContext();
+		ModuleExpansion entryPointExpansion = expandModule(expansionCtx, entryPointModule);
 		
 		if(getParseMessages().size() == 0) {
 			HLCodeBuilder hlCodeBuilder = new HLEntryPointBuilder(HLCodeBuilder.Factory.fromAST(entryPointExpansion.ast)); 

@@ -166,6 +166,6 @@ public class ModuleApplication {
 
 		Module module = getModule(identifier);
 		
-		return module.reify();
+		return module.reify(null);
 	}
 }

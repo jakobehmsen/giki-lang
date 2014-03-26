@@ -20,7 +20,7 @@ public class Module {
 	public final String path;
 	public final String name;
 //	public final Symbol bodyAst;
-	public final Func0<Symbol> bodyInterpolater;
+	public final Func1<Symbol, ExpansionContext> bodyInterpolater;
 	public final Parser.ParseContext parseContext;
 //	public final CodeBuilder codeBuilder;
 //	private CodeBuilder.Build build;
@@ -32,7 +32,7 @@ public class Module {
 	private Symbol reified;
 	
 //	public Module(String ressourcePath, String path, String name, Symbol bodyAst, CodeBuilder codeBuilder, String[] modifiers, Module[] innerModules, ArrayList<HLIdentifier> dependencies) {
-	public Module(String ressourcePath, String path, String name, Func0<Symbol> bodyInterpolater, Parser.ParseContext parseContext, Modifier[] modifiers, Module[] innerModules) {
+	public Module(String ressourcePath, String path, String name, Func1<Symbol, ExpansionContext> bodyInterpolater, Parser.ParseContext parseContext, Modifier[] modifiers, Module[] innerModules) {
 		this.ressourcePath = ressourcePath;
 		this.path = path;
 		this.name = name;
@@ -44,7 +44,7 @@ public class Module {
 //		this.dependencies = dependencies;
 	}
 
-	public Symbol reify() {
+	public Symbol reify(ExpansionContext expansionCtx) {
 		if(reified != null)
 			return reified;
 		
@@ -54,13 +54,13 @@ public class Module {
 		
 		ArrayList<Symbol> reifiedInnerModulesBuilder = new ArrayList<Symbol>();
 		for(Module innerModule: innerModules)
-			reifiedInnerModulesBuilder.add(innerModule.reify());
+			reifiedInnerModulesBuilder.add(innerModule.reify(expansionCtx));
 		
 		reified = new Symbol.Map()
 			.with(Symbol.Map.KEY_TYPE, Symbol.Map.AST_TYPE_MODULE)
 			.with(Symbol.Map.KEY_MODIFIERS, new Container.Default(reifiedModifiersBuilder))
 			.with(Symbol.Map.KEY_INNER_MODULES, new Container.Default(reifiedInnerModulesBuilder))
-			.with(Symbol.Map.KEY_BODY, bodyInterpolater.call());
+			.with(Symbol.Map.KEY_BODY, bodyInterpolater.call(expansionCtx));
 		
 		return reified;
 	}

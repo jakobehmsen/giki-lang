@@ -1,6 +1,7 @@
 package giki.gui;
 
 import giki.diagnostics.StopWatch;
+import giki.parser.ExpansionContext;
 import giki.parser.FileResourceStore;
 import giki.parser.Module;
 import giki.parser.ModuleApplication;
@@ -927,8 +928,8 @@ public class MainFrame extends JFrame {
 		Parser resourceParser = new Parser(System.out);
 		try {
 			Module module = resourceParser.toModule(resource);
-			
-			Symbol moduleAsSymbol = module.reify();
+			ExpansionContext expansionCtx = new ExpansionContext();
+			Symbol moduleAsSymbol = module.reify(expansionCtx);
 			TaskView taskView = taskListView.newTask(name);
 			taskView.setStatus("Finished");
 			taskView.setResult("Accepted");
