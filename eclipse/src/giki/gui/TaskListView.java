@@ -5,12 +5,16 @@ import giki.runtime.Output;
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Component;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
 import java.util.Date;
 import java.util.EventObject;
 
 import javax.swing.AbstractCellEditor;
 import javax.swing.DefaultCellEditor;
 import javax.swing.JLabel;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
@@ -36,6 +40,17 @@ public class TaskListView extends JPanel {
 		outputTable.setFont(MainFrame.DESCRIPTION_FONT);
 		outputTable.getTableHeader().setFont(MainFrame.TITLE_FONT);
 		outputTableModel = (DefaultTableModel)outputTable.getModel();
+		
+		outputTable.addMouseListener(new MouseAdapter() {
+			@Override
+			public void mouseClicked(MouseEvent e) {
+				if(e.getClickCount() == 2) {
+					int row = outputTable.getSelectedRow();
+					int column = outputTable.getSelectedColumn();
+					showDetails(row, column);
+				}
+			}
+		});
 
 		outputTableModel.addColumn("Resource");
 		outputTableModel.addColumn("Status");
@@ -76,6 +91,12 @@ public class TaskListView extends JPanel {
 //		outputTable.setAutoResizeMode(JTable.AUTO_RESIZE_OFF);
 		
 		add(new JScrollPane(outputTable), BorderLayout.CENTER);
+	}
+	
+	private void showDetails(int row, int column) {
+		String columnName = outputTable.getColumnName(column);
+		String contentAsString = outputTable.getModel().getValueAt(row, column).toString();
+		JOptionPane.showMessageDialog(this, contentAsString, columnName + " details", JOptionPane.INFORMATION_MESSAGE);
 	}
 	
 //	private static class ExtendedTableCellEditor extends AbstractCellEditor implements TableCellEditor

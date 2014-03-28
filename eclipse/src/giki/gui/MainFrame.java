@@ -902,11 +902,14 @@ public class MainFrame extends JFrame {
 									}
 								};
 							}
-						} catch (IOException e2) {
-							e2.printStackTrace();
+						} catch (Exception e2) {
+							out.println("Unexpected error: " + e2.getMessage());
+							e2.printStackTrace(out);
+//							e2.printStackTrace();
+							return TaskNode.End.INSTANCE;
 						}
 						
-						return TaskNode.End.INSTANCE;
+//						return TaskNode.End.INSTANCE;
 					}
 					
 					@Override
